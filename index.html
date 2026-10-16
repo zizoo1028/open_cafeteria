@@ -17,7 +17,7 @@
     <section class="bg-gradient-to-b from-brand-50 to-cream">
       <div class="max-w-6xl mx-auto px-4 pt-14 pb-16 md:pt-20 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
         <div>
-          <span class="badge badge-brand">부산 금정구 시범 운영 (프로토타입)</span>
+          <span class="badge badge-brand">서울·부산 시범 운영 (프로토타입)</span>
           <h1 class="mt-4 text-4xl md:text-5xl font-extrabold leading-tight">
             우리 동네 구내식당에서<br><span class="text-brand-600">건강한 한 끼</span>를
           </h1>
@@ -35,26 +35,24 @@
             <div class="card p-4"><dt class="text-sm text-stone-500">나눔 식권</dt><dd id="statShare" class="text-2xl font-extrabold mt-1">-</dd></div>
           </dl>
         </div>
-        <!-- 미리보기 카드 -->
-        <div class="relative" aria-label="화면 예시">
+        <!-- 대표 식당 카드 (IR 시연 대상: 부영그룹 식당, DB 데이터로 채움) -->
+        <div class="relative" aria-label="대표 식당">
           <div class="card p-5 shadow-xl shadow-orange-100 rotate-1">
-            <div class="flex items-center justify-between">
-              <span class="badge badge-open">● 중식 운영 중</span>
-              <span class="text-sm text-stone-500">🚶 350m</span>
+            <div class="flex items-center justify-between gap-2">
+              <span id="featStatus" class="badge">불러오는 중…</span>
+              <span id="featPlace" class="text-sm text-stone-500 truncate">부영빌딩 지하1층</span>
             </div>
-            <p class="mt-3 text-xl font-extrabold">부산대 학생회관 식당 <span class="text-brand-600">5,000원</span></p>
+            <p class="mt-3 text-xl font-extrabold"><span id="featName">부영그룹 식당</span> <span id="featPrice" class="text-brand-600"></span></p>
             <div class="mt-3 rounded-2xl bg-brand-50 p-4">
-              <p class="font-bold">🍱 오늘 중식 · 812kcal <span class="text-green-700">균형식단</span></p>
-              <p class="mt-1 text-stone-700">잡곡밥 · 된장찌개 · 제육볶음 · 시금치나물 · 계란말이 · 배추김치</p>
+              <p id="featMenuHead" class="font-bold">🍱 메뉴</p>
+              <p id="featMenu" class="mt-1 text-stone-700">식단을 불러오는 중…</p>
             </div>
             <div class="mt-3 grid grid-cols-2 gap-2">
-              <span class="btn btn-outline">📅 식단표</span>
-              <span class="btn btn-primary">🎫 이용권 사기</span>
+              <a id="featMenuLink" href="map.html" class="btn btn-outline">📅 식단표</a>
+              <a id="featBuyLink" href="map.html" class="btn btn-primary">🎫 이용권 사기</a>
             </div>
           </div>
-          <div class="absolute -bottom-6 -left-4 card px-4 py-3 shadow-lg -rotate-2 hidden sm:block">
-            <p class="text-sm">⭐ 4.6 · “이용권 미리 사두니 줄 안 서고 바로 입장!”</p>
-          </div>
+          <div id="featReview" class="absolute -bottom-6 -left-4 card px-4 py-3 shadow-lg -rotate-2 hidden"></div>
         </div>
       </div>
     </section>
@@ -179,6 +177,38 @@
         ? (Math.round(priced.reduce((s, r) => s + r.price, 0) / priced.length / 100) / 10).toFixed(1) + '천원'
         : '-';
       document.getElementById('statShare').textContent = list.reduce((s, r) => s + OC.shareRemaining(r.id), 0) + '장';
+
+      // 대표 식당 카드: IR 시연 대상(부영그룹 식당). 이름이 바뀌어도 찾을 수 있게 id 우선, 없으면 이름으로
+      const FEATURED_ID = 407;
+      const r = OC.restaurant(FEATURED_ID) || list.find((x) => x.name.includes('부영그룹'));
+      if (!r) return;
+      const $ = (id) => document.getElementById(id);
+      const st = OC.status(r);
+      $('featStatus').className = 'badge ' + (st.open ? 'badge-open' : '');
+      $('featStatus').textContent = (st.open ? '● ' : '') + st.label;
+      $('featPlace').textContent = r.building || r.address;
+      $('featName').textContent = r.name;
+      $('featPrice').textContent = r.price ? OC.won(r.price) : '';
+      const tm = OC.todayMenu(r);
+      if (tm.menu) {
+        const n = OC.nutrition(tm.menu);
+        $('featMenuHead').innerHTML = `🍱 ${OC.esc(tm.label)}${n.kcal ? ` · ${n.kcal}kcal` : ''}${n.balanced ? ' <span class="text-green-700">균형식단</span>' : ''}`;
+        $('featMenu').textContent = tm.menu.items.map((i) => i.n).join(' · ');
+      } else {
+        $('featMenuHead').textContent = `🍱 ${tm.label} 메뉴`;
+        $('featMenu').textContent = '아직 식단이 등록되지 않았어요';
+      }
+      $('featMenuLink').href = `restaurant.html?id=${r.id}#menu`;
+      $('featBuyLink').href = r.ticketOnSale ? `checkout.html?id=${r.id}` : `restaurant.html?id=${r.id}`;
+      if (!r.ticketOnSale) $('featBuyLink').textContent = 'ℹ️ 상세 정보';
+      // 최근 후기 한 줄 (있을 때만)
+      OC.fetchReviews({ placeId: r.id, limit: 1 })
+        .then(([v]) => {
+          if (!v) return;
+          $('featReview').innerHTML = `<p class="text-sm">⭐ ${v.rating} · “${OC.esc(v.text.length > 28 ? v.text.slice(0, 28) + '…' : v.text)}”</p>`;
+          $('featReview').classList.add('sm:block'); // 모바일에서는 숨기고 넓은 화면에서만 표시
+        })
+        .catch(() => {});
     });
   </script>
 </body>
