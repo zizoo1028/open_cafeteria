@@ -2,7 +2,6 @@
 (function () {
   const esc = OC.esc;
   const desktop = window.matchMedia('(min-width: 768px)');
-  const DEMO_LOCATION = { lat: 35.2312, lng: 129.0846 }; // 부산대 정문 (위치 권한이 없을 때 시연용)
   const state = { q: '', type: 'all', tier: 'all', openNow: false, ticket: false, share: false, selected: null, me: null, sheet: null };
 
   const panel = document.getElementById('panel');
@@ -143,7 +142,7 @@
         <ul class="info-list text-[15px]">
           <li><span class="ico">📍</span><span class="flex-1">${esc(r.address)}</span><button data-act="copy" class="link-btn">복사</button></li>
           <li><span class="ico">🕒</span><span class="flex-1">${esc(OC.hoursText(r))}</span></li>
-          <li><span class="ico">🚶</span><span class="flex-1">${state.me ? `현재 위치에서 <b>${OC.fmtDist(dist(r))}</b>` : '<span class="text-stone-400">위치 권한 필요</span>'}</span>
+          <li><span class="ico">🚶</span><span class="flex-1">${state.me ? `현재 위치에서 <b>${OC.fmtDist(dist(r))}</b>` : '<span class="text-stone-400">내 위치를 확인하면 거리가 보여요</span>'}</span>
             ${state.me ? '' : '<button data-act="locate" class="link-btn">내 위치 확인</button>'}</li>
           ${r.publicNote ? `<li><span class="ico">ℹ️</span><span class="flex-1">${esc(r.publicNote)}</span></li>` : ''}
           ${r.phone ? `<li><span class="ico">📞</span><a class="flex-1 underline underline-offset-2" href="tel:${esc(r.phone)}">${esc(r.phone)}</a></li>` : ''}
@@ -241,29 +240,68 @@
   }
 
   /* ---------- 내 위치 ---------- */
-  function setMe(loc, demo) {
+  function setMe(loc) {
     state.me = loc;
     if (map) {
       if (meOverlay) meOverlay.setMap(null);
       meOverlay = new kakao.maps.CustomOverlay({ position: latLng(loc), content: OC.overlayEl('<div class="me-dot"></div>'), xAnchor: 0, yAnchor: 0, zIndex: 5 });
       meOverlay.setMap(map);
+      map.setLevel(4);
       map.panTo(latLng(loc));
     }
-    OC.toast(demo ? '위치 권한이 없어 부산대 정문 기준으로 보여드려요 (시연용)' : '내 위치 기준으로 가까운 순 정렬했어요');
+    OC.toast('내 위치 기준으로 가까운 순 정렬했어요');
     refresh();
     if (state.selected) showDetail(OC.restaurant(state.selected));
   }
+
+  // 위치를 못 가져왔을 때 원인별로 허용 방법 안내 (사이트가 권한을 대신 켤 수는 없음)
+  function locationHelp(code) {
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+    const steps = {
+      1: {
+        title: '위치 권한이 꺼져 있어요',
+        body: isMobile
+          ? ['주소창의 <b>자물쇠(또는 ⓘ) 아이콘</b> → <b>권한</b> → <b>위치 → 허용</b>', '휴대폰 <b>설정 → 위치(위치 서비스)</b>가 켜져 있는지 확인', '설정 후 이 페이지를 새로고침']
+          : ['주소창 왼쪽의 <b>자물쇠(사이트 정보) 아이콘</b>을 누르세요', '<b>위치</b>를 <b>허용</b>으로 바꾸세요 (없으면 <b>사이트 설정 → 위치 → 허용</b>)', '페이지를 새로고침한 뒤 다시 ◎ 버튼을 누르세요'],
+      },
+      2: {
+        title: '기기에서 위치를 찾지 못했어요',
+        body: isMobile
+          ? ['휴대폰 <b>설정 → 위치</b>를 켜 주세요', 'Wi-Fi를 켜 두면 실내에서도 위치가 더 잘 잡혀요']
+          : ['Windows <b>설정 → 개인 정보 및 보안 → 위치</b>에서 <b>위치 서비스</b>와 <b>앱의 위치 액세스</b>를 켜 주세요', 'PC는 Wi-Fi로 위치를 추정해서 수백 m 정도 차이가 날 수 있어요'],
+      },
+      3: { title: '위치를 찾는 데 시간이 너무 걸려요', body: ['잠시 후 ◎ 버튼을 다시 눌러 주세요', '실내라면 창가나 Wi-Fi가 켜진 곳에서 시도해 보세요'] },
+      0: { title: '이 브라우저는 위치 기능을 지원하지 않아요', body: ['크롬·엣지·사파리 최신 버전에서 열어 주세요', '주소가 <b>https://</b>로 시작하는지 확인해 주세요'] },
+    }[code] || { title: '위치를 가져오지 못했어요', body: ['잠시 후 다시 시도해 주세요'] };
+    const ov = document.createElement('div');
+    ov.className = 'overlay';
+    ov.innerHTML = `
+      <div class="bg-white rounded-3xl p-6 w-[min(92vw,420px)] shadow-xl" role="dialog" aria-modal="true" aria-label="위치 권한 안내">
+        <p class="text-3xl">📍</p>
+        <p class="mt-2 text-lg font-extrabold">${steps.title}</p>
+        <ol class="mt-3 space-y-2 text-stone-700 list-decimal pl-5">${steps.body.map((s) => `<li>${s}</li>`).join('')}</ol>
+        <button data-close class="btn btn-primary w-full mt-5">확인</button>
+      </div>`;
+    ov.addEventListener('click', (e) => {
+      if (e.target === ov || e.target.closest('[data-close]')) ov.remove();
+    });
+    document.body.appendChild(ov);
+  }
+
   function locate() {
-    if (!navigator.geolocation) return setMe(DEMO_LOCATION, true);
+    if (!navigator.geolocation || !window.isSecureContext) return locationHelp(0);
+    const btn = document.getElementById('locateBtn');
+    btn.classList.add('animate-pulse');
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        // 시연 지역에서 너무 멀면(20km 초과) 시연 위치 사용
-        if (OC.distance(loc, DEMO_LOCATION) > 20000) setMe(DEMO_LOCATION, true);
-        else setMe(loc, false);
+        btn.classList.remove('animate-pulse');
+        setMe({ lat: pos.coords.latitude, lng: pos.coords.longitude });
       },
-      () => setMe(DEMO_LOCATION, true),
-      { timeout: 6000 }
+      (err) => {
+        btn.classList.remove('animate-pulse');
+        locationHelp(err.code); // 1: 권한 거부, 2: 위치 못 찾음, 3: 시간 초과
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   }
 
