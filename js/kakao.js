@@ -1,6 +1,6 @@
 /* 카카오맵 SDK 로더 (키는 js/config.js)
  * JavaScript 키는 카카오 콘솔의 [JavaScript SDK 도메인]에 등록된 주소에서만 동작합니다.
- * (현재 등록: http://localhost:8123)
+ * (개발: http://localhost:8123, 배포: Vercel 주소를 각각 등록)
  */
 (function () {
   let loading = null;
@@ -26,7 +26,7 @@
         <div>
           <p class="text-4xl">🗺️</p>
           <p class="mt-3 font-bold">카카오맵을 불러오지 못했어요</p>
-          <p class="mt-1 text-sm text-stone-500">카카오 콘솔의 JavaScript SDK 도메인에 등록된 주소<br>(http://localhost:8123)로 열었는지 확인해 주세요.</p>
+          <p class="mt-1 text-sm text-stone-500">카카오 콘솔 [플랫폼 키] → JavaScript 키 → JavaScript SDK 도메인에<br><b class="text-ink">${OC.esc(location.origin)}</b> 이 등록되어 있는지 확인해 주세요.</p>
         </div>
       </div>`;
   };
