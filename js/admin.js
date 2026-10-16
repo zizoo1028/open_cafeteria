@@ -431,6 +431,7 @@
           <label class="option"><input type="checkbox" name="ticket_on_sale" ${p.ticket_on_sale ? 'checked' : ''}> 이용권 판매</label>
         </div>
         ${field('외부인 입장 조건', input('public_note', p.public_note, 'placeholder="예: 외부인 12:10 이후 입장"'))}
+        ${field('식단표 페이지 주소', `<div class="flex gap-2">${input('menu_url', p.menu_url, 'type="url" placeholder="https://… (구청 식단 게시판, 인스타그램 등)"')}${p.menu_url ? `<a href="${esc(p.menu_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline shrink-0">열어 보기 ↗</a>` : ''}</div>`)}
         ${field('태그 (쉼표로 구분)', input('tags', (p.tags || []).join(', '), 'placeholder="예: 균형식단, 직장인 추천"'))}
         ${field('소개', `<textarea name="description" class="input min-h-[80px]">${esc(p.description || '')}</textarea>`)}
 
@@ -623,10 +624,12 @@
         saturday: f.namedItem('saturday').checked,
         ticket_on_sale: f.namedItem('ticket_on_sale').checked,
         public_note: val('public_note') || null,
+        menu_url: val('menu_url') || null,
         tags: val('tags').split(/[,;]/).map((t) => t.trim()).filter(Boolean),
         description: val('description') || null,
       };
       if (!payload.name || !payload.address) return fail('이름과 주소는 꼭 입력해 주세요.');
+      if (payload.menu_url && !OC.safeUrl(payload.menu_url)) return fail('식단표 페이지 주소는 https:// 또는 http://로 시작해야 해요.');
       if (!payload.lunch_start !== !payload.lunch_end) return fail('중식 시작·종료 시간을 둘 다 입력하거나 둘 다 비워 주세요.');
       if (!payload.dinner_start !== !payload.dinner_end) return fail('석식 시작·종료 시간을 둘 다 입력하거나 둘 다 비워 주세요.');
       if (payload.status === 'verified' && (!payload.price || !payload.lunch_start) && !confirm('가격 또는 중식 시간이 비어 있어요. 그래도 승인 상태로 저장할까요?')) return;
@@ -819,6 +822,7 @@
     if (!times[0]) warn('중식 시간이 없어요');
     if (!price) warn('가격이 없어요');
     if (type === 'cafeteria' && !g('외부인입장조건')) warn('구내식당인데 외부인 입장 조건이 없어요');
+    if (g('식단표링크') && !OC.safeUrl(g('식단표링크'))) warn('식단표링크가 https:// 주소가 아니라서 비워 둘게요');
     const unverified = /미확인/.test(g('메모'));
     if (unverified) warn('메모에 "미확인" → 후보로만 등록');
 
@@ -878,6 +882,7 @@
       ticket_on_sale: yes(g('이용권판매')),
       tags: g('태그').split(/[;,]/).map((t) => t.trim()).filter(Boolean),
       description: g('소개') || null,
+      menu_url: OC.safeUrl(g('식단표링크')),
       source: 'manual',
       status: 'candidate',
     };

@@ -154,6 +154,7 @@
           </div>
           ${tm.menu ? `<p class="leading-relaxed">${tm.menu.items.map((i) => esc(i.n)).join(' · ')}</p>${OC.macroBar(nut, 'mt-3')}` : '<p class="text-stone-500">등록된 식단이 없어요.</p>'}
         </div>
+        ${OC.menuPageButton(r)}
         <div>
           <div class="flex items-center justify-between mb-2">
             <b>💬 후기</b>
@@ -167,11 +168,11 @@
           <a class="btn btn-outline" href="${base}#info">ℹ️ 상세 정보</a>
           ${r.ticketOnSale ? `<a class="btn btn-primary" href="checkout.html?id=${r.id}">🎫 이용권 사기</a>` : '<span class="btn btn-disabled">이용권 준비 중</span>'}
         </div>
-        <div class="grid ${OC.kakaoPlaceUrl(r) ? 'grid-cols-[1fr_auto_auto]' : 'grid-cols-[1fr_auto]'} gap-2">
+        <div class="grid grid-cols-[1fr_auto] gap-2">
           <a class="btn btn-dark" href="${OC.kakaoDirections(r)}" target="_blank" rel="noopener">🧭 길 찾기</a>
-          ${OC.kakaoPlaceUrl(r) ? `<a class="btn btn-outline px-4" href="${OC.kakaoPlaceUrl(r)}" target="_blank" rel="noopener">카카오맵</a>` : ''}
           <button data-act="share" class="btn btn-outline px-5">🔗 공유</button>
         </div>
+        ${OC.externalLinksHtml(r, '-ml-2')}
         <button data-act="report" class="link-btn -ml-2 text-stone-500">정보가 실제와 다른가요? 제보하기</button>
       </div>`;
   }
