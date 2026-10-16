@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "open-cafeteria",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8123", "--directory", "C:/Users/t3397/Desktop/open cafeteria"],
+      "port": 8123
+    }
+  ]
+}

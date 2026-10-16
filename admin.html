@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 · 열린식당</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tw-config.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-[1100]"></header>
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <span class="badge badge-blue">관리자 전용</span>
+    <h1 class="mt-2 text-3xl font-extrabold">⚙️ 식당 관리</h1>
+    <p class="mt-1 text-stone-500">식당을 후보로 등록하고, 확인한 뒤 승인하면 지도에 표시돼요.</p>
+
+    <div id="gate" class="mt-8"><p class="text-stone-400">불러오는 중…</p></div>
+
+    <div id="adminApp" class="hidden">
+      <div class="mt-6 flex gap-2 overflow-x-auto scrollbar-none" role="tablist">
+        <button class="chip on" data-tab="places" role="tab">🏢 식당 목록</button>
+        <button class="chip" data-tab="csv" role="tab">📄 CSV 업로드</button>
+        <button class="chip" data-tab="search" role="tab">🔍 카카오 검색 추가</button>
+        <button class="chip" data-tab="reports" role="tab">📮 제보 <span id="reportCount"></span></button>
+      </div>
+      <div id="tabContent" class="mt-6"></div>
+    </div>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/kakao.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

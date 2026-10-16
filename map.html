@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>지도 검색 · 열린식당</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tw-config.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="overflow-hidden">
+  <div class="flex flex-col h-[100dvh]">
+    <header id="site-header" class="relative z-[1100] shrink-0"></header>
+
+    <!-- 검색 + 필터 -->
+    <div class="shrink-0 bg-white border-b border-orange-100 relative z-[1050]">
+      <div class="px-4 pt-3 pb-2 flex gap-2">
+        <label class="relative flex-1">
+          <span class="sr-only">식당 검색</span>
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" aria-hidden="true">🔍</span>
+          <input id="search" type="search" class="input pl-10 bg-stone-50" placeholder="식당명, 건물명, 주소로 검색" autocomplete="off">
+        </label>
+      </div>
+      <div class="px-4 pb-3 flex items-center gap-2">
+        <div id="chips" class="flex gap-2 overflow-x-auto scrollbar-none flex-1" role="toolbar" aria-label="필터">
+          <button class="chip on" data-type="all">전체</button>
+          <button class="chip" data-type="cafeteria">🏢 구내식당</button>
+          <button class="chip" data-type="buffet">🍲 한식뷔페</button>
+          <span class="w-px bg-stone-200 shrink-0 my-1"></span>
+          <button class="chip on" data-tier="all">모든 가격</button>
+          <button class="chip" data-tier="low"><span class="dot bg-green-600"></span>~6,000원</button>
+          <button class="chip" data-tier="mid"><span class="dot bg-brand-500"></span>~8,000원</button>
+          <span class="w-px bg-stone-200 shrink-0 my-1"></span>
+          <button class="chip" data-toggle="openNow" aria-pressed="false">지금 운영 중</button>
+          <button class="chip" data-toggle="ticket" aria-pressed="false">🎫 이용권</button>
+          <button class="chip" data-toggle="share" aria-pressed="false">🤝 나눔 식권</button>
+        </div>
+        <span id="count" class="text-sm text-stone-500 shrink-0 font-semibold"></span>
+      </div>
+    </div>
+
+    <!-- 지도 영역 -->
+    <div class="relative flex-1 flex min-h-0">
+      <aside id="panel" class="hidden md:block w-[400px] shrink-0 border-r border-orange-100 bg-cream overflow-y-auto" aria-live="polite"></aside>
+      <div class="relative flex-1">
+        <div id="map" class="absolute inset-0" aria-label="구내식당 지도"></div>
+        <div class="absolute left-3 top-3 z-[500] bg-white/95 rounded-xl shadow px-3 py-2 text-xs font-semibold flex gap-3">
+          <span><span class="dot bg-green-600"></span> ~6천원</span>
+          <span><span class="dot bg-brand-500"></span> ~8천원</span>
+          <span>🎫 이용권</span><span>🤝 나눔</span>
+        </div>
+        <button id="locateBtn" class="absolute right-3 bottom-6 z-[500] w-12 h-12 rounded-full bg-white shadow-lg grid place-items-center text-xl" aria-label="내 위치로 이동" title="내 위치">◎</button>
+        <button id="listBtn" class="md:hidden absolute left-1/2 -translate-x-1/2 bottom-6 z-[500] btn btn-dark rounded-full shadow-lg px-6">☰ 목록 보기</button>
+      </div>
+      <!-- 모바일 바텀시트 -->
+      <div id="sheet" class="sheet md:hidden" role="dialog" aria-label="식당 정보">
+        <div class="sheet-handle"></div>
+        <div id="sheetBody" class="sheet-body"></div>
+      </div>
+    </div>
+
+    <!-- 모바일 하단 탭 -->
+    <nav class="md:hidden shrink-0 grid grid-cols-3 h-16 bg-white border-t border-orange-100 relative z-[1100]" aria-label="하단 메뉴">
+      <a href="map.html" class="flex flex-col items-center justify-center text-brand-600 font-bold text-sm"><span class="text-xl">🗺️</span>지도</a>
+      <a href="feed.html" class="flex flex-col items-center justify-center text-stone-500 font-semibold text-sm"><span class="text-xl">💬</span>후기 피드</a>
+      <a href="tickets.html" class="flex flex-col items-center justify-center text-stone-500 font-semibold text-sm"><span class="text-xl">🎫</span>내 이용권</a>
+    </nav>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/kakao.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>

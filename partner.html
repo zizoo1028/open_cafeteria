@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>파트너 대시보드 · 열린식당</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tw-config.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-[1100]"></header>
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <span class="badge badge-blue">위탁업체·운영기관용</span>
+        <h1 class="mt-2 text-3xl font-extrabold">📊 파트너 대시보드</h1>
+        <p class="mt-1 text-stone-500">사전판매와 일별 실적으로 식수를 예측해 잔반과 강제식수를 줄여요.</p>
+      </div>
+      <label id="ridWrap" class="md:w-80 hidden">
+        <span class="label text-sm">관리하는 식당</span>
+        <select id="ridSelect" class="input"></select>
+      </label>
+    </div>
+
+    <div id="gate" class="mt-8"><p class="text-stone-400">불러오는 중…</p></div>
+
+    <div id="dash" class="hidden">
+      <dl id="kpis" class="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3"></dl>
+
+      <div class="mt-6 grid lg:grid-cols-2 gap-6">
+        <section class="card p-6">
+          <h2 class="text-lg font-extrabold">다음 5일 예상 식수</h2>
+          <p class="text-sm text-stone-500">이용권 확정분 + 요일별 최근 4주 평균 (일별 실적 기준)</p>
+          <div class="mt-4 h-72"><canvas id="forecastChart"></canvas></div>
+        </section>
+        <section class="card p-6">
+          <h2 class="text-lg font-extrabold">최근 실적</h2>
+          <p class="text-sm text-stone-500">막대: 실제 식수 · 선: 준비량</p>
+          <div class="mt-4 h-72 relative"><canvas id="historyChart"></canvas><div id="historyEmpty" class="hidden absolute inset-0 grid place-items-center text-center text-stone-400">아직 입력한 실적이 없어요.<br>아래 "일별 실적 입력"에서 기록해 주세요.</div></div>
+        </section>
+      </div>
+
+      <div class="mt-6 grid lg:grid-cols-2 gap-6 items-start">
+        <section class="card p-6">
+          <h2 class="text-lg font-extrabold">이용권 사전판매 현황</h2>
+          <div id="presaleTable" class="mt-4 overflow-x-auto"></div>
+        </section>
+        <section class="card p-6">
+          <h2 class="text-lg font-extrabold">일별 실적 입력</h2>
+          <p class="text-sm text-stone-500">하루 한 번, 실제 식수와 준비량을 기록하면 예측이 정확해져요.</p>
+          <form id="countForm" class="mt-4 grid grid-cols-2 gap-3" novalidate>
+            <label class="col-span-2"><span class="label">날짜</span><input type="date" name="date" class="input"></label>
+            <label><span class="label">임직원 식수</span><input type="number" name="internal" min="0" class="input" inputmode="numeric"></label>
+            <label><span class="label">외부 현장 식수</span><input type="number" name="walkin" min="0" class="input" inputmode="numeric"></label>
+            <label><span class="label">준비량 (인분)</span><input type="number" name="prepared" min="0" class="input" inputmode="numeric"></label>
+            <label><span class="label">잔반 (kg)</span><input type="number" name="waste_kg" min="0" step="0.1" class="input" inputmode="decimal"></label>
+            <p id="countError" class="col-span-2 text-sm font-semibold text-red-600 hidden"></p>
+            <button class="btn btn-dark col-span-2">실적 저장</button>
+          </form>
+        </section>
+      </div>
+
+      <section class="mt-6 card p-6">
+        <h2 class="text-lg font-extrabold">식단 등록</h2>
+        <p class="text-sm text-stone-500">등록한 식단은 바로 식당 식단표와 지도 카드에 반영돼요.</p>
+        <div class="mt-4 grid lg:grid-cols-2 gap-6 items-start">
+          <form id="menuForm" class="space-y-4" novalidate>
+            <div class="grid grid-cols-2 gap-3">
+              <label><span class="label">날짜</span><input type="date" name="date" class="input"></label>
+              <label><span class="label">식사</span><select name="meal" class="input"><option value="lunch">중식</option><option value="dinner">석식</option></select></label>
+            </div>
+            <label class="block">
+              <span class="label">메뉴 <span class="text-stone-400 font-normal">(한 줄에 하나, 열량은 선택: "제육볶음 420")</span></span>
+              <textarea name="items" class="input min-h-[150px] font-mono text-[15px]" placeholder="잡곡밥 310&#10;된장찌개 120&#10;제육볶음 420&#10;시금치나물 45&#10;계란말이 160&#10;배추김치 20"></textarea>
+            </label>
+            <p id="menuError" class="text-sm font-semibold text-red-600 hidden"></p>
+            <button class="btn btn-primary w-full">식단 등록</button>
+          </form>
+          <div id="myMenus"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/partner.js"></script>
+</body>
+</html>

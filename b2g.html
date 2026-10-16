@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>공공 협력 · 열린식당</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tw-config.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-[1100]"></header>
+  <main>
+    <section class="bg-gradient-to-b from-blue-50 to-cream">
+      <div class="max-w-5xl mx-auto px-4 pt-12 pb-10">
+        <span class="badge badge-blue">지자체·공공기관 (B2G)</span>
+        <h1 class="mt-3 text-3xl md:text-4xl font-extrabold leading-tight">공공기관 구내식당을<br>지역의 끼니 복지 거점으로</h1>
+        <p class="mt-4 text-lg text-stone-600 max-w-2xl">구청·주민센터·도서관·복지관 식당을 주민에게 열고, 나눔 식권과 끼니 지원 사업을 열린식당 하나로 운영해요.</p>
+      </div>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-4 py-12">
+      <h2 class="text-2xl font-extrabold">협력 모델</h2>
+      <div class="mt-6 grid md:grid-cols-3 gap-4">
+        <article class="card p-6"><div class="text-3xl">🏛️</div><h3 class="mt-3 font-extrabold text-lg">공공 식당 개방</h3><p class="mt-2 text-stone-600">기관 식당의 외부인 시간대·가격·식단을 등록하면 지도에 바로 노출돼요. 남는 좌석과 식수를 주민에게 엽니다.</p></article>
+        <article class="card p-6"><div class="text-3xl">🎟️</div><h3 class="mt-3 font-extrabold text-lg">끼니 지원 바우처 연계</h3><p class="mt-2 text-stone-600">아동급식카드·어르신 식사 지원 예산을 열린식당 나눔 식권으로 지급해요. 일반 이용권과 똑같아 낙인감이 없어요.</p></article>
+        <article class="card p-6"><div class="text-3xl">📈</div><h3 class="mt-3 font-extrabold text-lg">정책 데이터 리포트</h3><p class="mt-2 text-stone-600">지역별 이용량, 나눔 식권 사용처, 잔반 절감량을 정기 리포트로 제공해 사업 성과를 측정해요.</p></article>
+      </div>
+    </section>
+
+    <section class="bg-white border-y border-orange-100">
+      <div class="max-w-5xl mx-auto px-4 py-12">
+        <h2 class="text-2xl font-extrabold">기대 효과 (시범 사업 목표 예시)</h2>
+        <dl class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="card p-5"><dt class="text-sm text-stone-500">개방 식당</dt><dd class="mt-1 text-3xl font-extrabold">30곳</dd><dd class="text-sm text-stone-500">구 단위 1년차</dd></div>
+          <div class="card p-5"><dt class="text-sm text-stone-500">나눔 끼니</dt><dd class="mt-1 text-3xl font-extrabold">월 2천</dd><dd class="text-sm text-stone-500">취약계층 대상</dd></div>
+          <div class="card p-5"><dt class="text-sm text-stone-500">잔반 감소</dt><dd class="mt-1 text-3xl font-extrabold">−30%</dd><dd class="text-sm text-stone-500">식수 예측 도입 식당</dd></div>
+          <div class="card p-5"><dt class="text-sm text-stone-500">주민 한 끼</dt><dd class="mt-1 text-3xl font-extrabold">5천원대</dd><dd class="text-sm text-stone-500">외부인 평균가</dd></div>
+        </dl>
+        <p class="mt-3 text-sm text-stone-500">※ 사업 제안용 목표치이며 실제 실적이 아닙니다.</p>
+      </div>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-4 py-12">
+      <h2 class="text-2xl font-extrabold">협력 문의</h2>
+      <p class="mt-1 text-stone-500">담당자가 영업일 기준 3일 안에 연락드려요. (시연용: 실제로 전송되지 않아요)</p>
+      <form id="inquiry" class="mt-6 card p-6 space-y-4" novalidate>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <label class="block"><span class="label">기관명</span><input name="org" class="input" placeholder="예: OO구청 복지정책과"></label>
+          <label class="block"><span class="label">담당자</span><input name="person" class="input" placeholder="이름"></label>
+        </div>
+        <label class="block"><span class="label">연락처 (이메일 또는 전화)</span><input name="contact" class="input"></label>
+        <fieldset>
+          <legend class="label">관심 분야</legend>
+          <div class="flex flex-wrap gap-2">
+            <label class="option"><input type="checkbox" name="topic" value="개방"> 공공 식당 개방</label>
+            <label class="option"><input type="checkbox" name="topic" value="바우처"> 끼니 지원 바우처</label>
+            <label class="option"><input type="checkbox" name="topic" value="리포트"> 데이터 리포트</label>
+          </div>
+        </fieldset>
+        <label class="block"><span class="label">문의 내용</span><textarea name="message" class="input min-h-[120px]"></textarea></label>
+        <p id="inqError" class="text-sm font-semibold text-red-600 hidden"></p>
+        <button class="btn btn-primary w-full">문의 보내기</button>
+      </form>
+      <div id="inqDone" class="hidden mt-6 card p-8 text-center">
+        <p class="text-5xl">📮</p>
+        <p class="mt-3 text-xl font-extrabold">문의가 접수됐어요</p>
+        <p class="mt-1 text-stone-600">시연용이라 실제로 전송되지는 않았어요.</p>
+      </div>
+    </section>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    (function () {
+      const form = document.getElementById('inquiry');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const f = form.elements;
+        const err = document.getElementById('inqError');
+        if (!f.org.value.trim() || !f.person.value.trim() || !f.contact.value.trim()) {
+          err.textContent = '기관명, 담당자, 연락처를 입력해 주세요.';
+          err.classList.remove('hidden');
+          return;
+        }
+        form.classList.add('hidden');
+        document.getElementById('inqDone').classList.remove('hidden');
+      });
+      form.addEventListener('change', (e) => {
+        if (e.target.name === 'topic') e.target.closest('.option').classList.toggle('on', e.target.checked);
+      });
+    })();
+  </script>
+</body>
+</html>

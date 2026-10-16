@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>내 이용권 · 열린식당</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tw-config.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-[1100]"></header>
+  <main class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-extrabold">🎫 내 이용권</h1>
+    <p class="mt-1 text-stone-500">식당 입구에서 QR 코드를 보여주세요.</p>
+    <div id="banner"></div>
+    <div class="mt-6 flex gap-2" role="tablist">
+      <button class="chip on" data-tab="active" role="tab">사용 가능</button>
+      <button class="chip" data-tab="past" role="tab">사용 완료·만료</button>
+    </div>
+    <div id="list" class="mt-4 space-y-4"></div>
+  </main>
+  <footer id="site-footer"></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/tickets.js"></script>
+</body>
+</html>

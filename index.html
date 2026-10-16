@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>열린식당 · 우리동네 구내식당</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tw-config.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-[1100]"></header>
+
+  <main>
+    <!-- 히어로 -->
+    <section class="bg-gradient-to-b from-brand-50 to-cream">
+      <div class="max-w-6xl mx-auto px-4 pt-14 pb-16 md:pt-20 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
+        <div>
+          <span class="badge badge-brand">부산 금정구 시범 운영 (프로토타입)</span>
+          <h1 class="mt-4 text-4xl md:text-5xl font-extrabold leading-tight">
+            우리 동네 구내식당에서<br><span class="text-brand-600">건강한 한 끼</span>를
+          </h1>
+          <p class="mt-5 text-lg text-stone-600 leading-relaxed">
+            외부인에게 열린 구내식당을 지도에서 찾고,<br class="hidden sm:block">
+            식단표와 후기를 확인한 뒤 <b>이용권을 미리 사거나 식권을 나눌 수 있어요.</b>
+          </p>
+          <div class="mt-8 flex flex-col sm:flex-row gap-3">
+            <a href="map.html" class="btn btn-primary text-lg px-7">📍 내 주변 식당 찾기</a>
+            <a href="share.html" class="btn btn-outline text-lg px-7">🤝 나눔 식권 알아보기</a>
+          </div>
+          <dl class="mt-10 grid grid-cols-3 gap-3 max-w-md">
+            <div class="card p-4"><dt class="text-sm text-stone-500">열린 식당</dt><dd id="statCount" class="text-2xl font-extrabold mt-1">-</dd></div>
+            <div class="card p-4"><dt class="text-sm text-stone-500">평균 한 끼</dt><dd id="statPrice" class="text-2xl font-extrabold mt-1">-</dd></div>
+            <div class="card p-4"><dt class="text-sm text-stone-500">나눔 식권</dt><dd id="statShare" class="text-2xl font-extrabold mt-1">-</dd></div>
+          </dl>
+        </div>
+        <!-- 미리보기 카드 -->
+        <div class="relative" aria-label="화면 예시">
+          <div class="card p-5 shadow-xl shadow-orange-100 rotate-1">
+            <div class="flex items-center justify-between">
+              <span class="badge badge-open">● 중식 운영 중</span>
+              <span class="text-sm text-stone-500">🚶 350m</span>
+            </div>
+            <p class="mt-3 text-xl font-extrabold">부산대 학생회관 식당 <span class="text-brand-600">5,000원</span></p>
+            <div class="mt-3 rounded-2xl bg-brand-50 p-4">
+              <p class="font-bold">🍱 오늘 중식 · 812kcal <span class="text-green-700">균형식단</span></p>
+              <p class="mt-1 text-stone-700">잡곡밥 · 된장찌개 · 제육볶음 · 시금치나물 · 계란말이 · 배추김치</p>
+            </div>
+            <div class="mt-3 grid grid-cols-2 gap-2">
+              <span class="btn btn-outline">📅 식단표</span>
+              <span class="btn btn-primary">🎫 이용권 사기</span>
+            </div>
+          </div>
+          <div class="absolute -bottom-6 -left-4 card px-4 py-3 shadow-lg -rotate-2 hidden sm:block">
+            <p class="text-sm">⭐ 4.6 · “이용권 미리 사두니 줄 안 서고 바로 입장!”</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 문제 -->
+    <section class="max-w-6xl mx-auto px-4 py-16">
+      <p class="font-bold text-brand-600">왜 열린식당인가요?</p>
+      <h2 class="mt-2 text-3xl font-extrabold">식당은 열려 있는데, 아무도 모릅니다</h2>
+      <div class="mt-8 grid md:grid-cols-3 gap-4">
+        <article class="card p-6">
+          <div class="text-3xl">🔍</div>
+          <h3 class="mt-3 text-lg font-extrabold">이용자: 정보가 없어요</h3>
+          <p class="mt-2 text-stone-600 leading-relaxed">외부인에게 개방된 구내식당이 있어도 어디인지, 얼마인지, 언제 들어갈 수 있는지 알기 어려워요. 알아도 결제·입장 절차가 번거롭습니다.</p>
+        </article>
+        <article class="card p-6">
+          <div class="text-3xl">📉</div>
+          <h3 class="mt-3 text-lg font-extrabold">위탁업체: 식수를 모릅니다</h3>
+          <p class="mt-2 text-stone-600 leading-relaxed">몇 명이 올지 예측하기 어려워 잔반이 생기고, 손익을 맞추려고 임직원 식수를 강제하는 문제가 있어요.</p>
+        </article>
+        <article class="card p-6">
+          <div class="text-3xl">🤝</div>
+          <h3 class="mt-3 text-lg font-extrabold">지역: 끼니 복지의 빈틈</h3>
+          <p class="mt-2 text-stone-600 leading-relaxed">어르신·결식 우려 청소년의 저렴하고 건강한 한 끼를 동네 구내식당과 연결해 주는 곳이 없어요.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 이용 방법 -->
+    <section class="bg-white border-y border-orange-100">
+      <div class="max-w-6xl mx-auto px-4 py-16">
+        <p class="font-bold text-brand-600">이용 방법</p>
+        <h2 class="mt-2 text-3xl font-extrabold">찾고, 사고, 바로 드세요</h2>
+        <ol class="mt-8 grid md:grid-cols-3 gap-4">
+          <li class="rounded-2xl bg-cream p-6">
+            <span class="grid place-items-center w-10 h-10 rounded-full bg-brand-500 text-white font-extrabold">1</span>
+            <h3 class="mt-4 text-lg font-extrabold">지도에서 찾기</h3>
+            <p class="mt-2 text-stone-600">가격·운영 시간·개방 여부로 걸러 보고, 마커를 누르면 오늘 메뉴와 후기가 보여요.</p>
+          </li>
+          <li class="rounded-2xl bg-cream p-6">
+            <span class="grid place-items-center w-10 h-10 rounded-full bg-brand-500 text-white font-extrabold">2</span>
+            <h3 class="mt-4 text-lg font-extrabold">이용권 미리 사기</h3>
+            <p class="mt-2 text-stone-600">날짜와 식사를 골라 이용권을 사 두면 현장 결제 없이 QR만 보여주면 돼요.</p>
+          </li>
+          <li class="rounded-2xl bg-cream p-6">
+            <span class="grid place-items-center w-10 h-10 rounded-full bg-brand-500 text-white font-extrabold">3</span>
+            <h3 class="mt-4 text-lg font-extrabold">먹고, 나누고</h3>
+            <p class="mt-2 text-stone-600">후기를 남기고, 원하면 이웃을 위해 나눔 식권을 기부할 수 있어요.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 기능 -->
+    <section class="max-w-6xl mx-auto px-4 py-16">
+      <p class="font-bold text-brand-600">주요 기능</p>
+      <h2 class="mt-2 text-3xl font-extrabold">정보에서 끝나지 않는 구내식당 플랫폼</h2>
+      <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a href="map.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🗺️</div><h3 class="mt-3 font-extrabold text-lg">지도·식단표·후기</h3><p class="mt-2 text-stone-600">개방 식당 위치, 주간 식단, 이용 후기를 한곳에서 확인해요.</p></a>
+        <a href="restaurant.html?id=2#menu" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🥗</div><h3 class="mt-3 font-extrabold text-lg">영양 정보</h3><p class="mt-2 text-stone-600">메뉴마다 열량과 탄수화물·단백질·지방 비율, 균형식단 여부를 보여줘요.</p></a>
+        <a href="checkout.html?id=2" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🎫</div><h3 class="mt-3 font-extrabold text-lg">이용권 사전판매</h3><p class="mt-2 text-stone-600">미리 사면 줄 서지 않고, 식당은 몇 명이 올지 미리 알 수 있어요.</p></a>
+        <a href="share.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🤝</div><h3 class="mt-3 font-extrabold text-lg">나눔 식권</h3><p class="mt-2 text-stone-600">이웃이 기부한 식권으로 어르신·청소년이 따뜻한 한 끼를 먹어요.</p></a>
+        <a href="partner.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">📊</div><h3 class="mt-3 font-extrabold text-lg">위탁업체 식수 예측</h3><p class="mt-2 text-stone-600">사전판매와 과거 실적으로 내일 식수를 예측해 잔반과 강제식수를 줄여요.</p></a>
+        <a href="b2g.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🏛️</div><h3 class="mt-3 font-extrabold text-lg">공공 협력 (B2G)</h3><p class="mt-2 text-stone-600">지자체·공공기관 식당을 개방하고 끼니 복지 사업과 연계해요.</p></a>
+      </div>
+    </section>
+
+    <!-- 비교 매트릭스 -->
+    <section class="bg-white border-y border-orange-100">
+      <div class="max-w-6xl mx-auto px-4 py-16">
+        <p class="font-bold text-brand-600">차별점</p>
+        <h2 class="mt-2 text-3xl font-extrabold">열린식당만 다섯 가지를 모두 채웁니다</h2>
+        <div class="mt-8 overflow-x-auto">
+          <table class="matrix w-full min-w-[640px] text-base">
+            <thead>
+              <tr class="text-stone-500 text-sm">
+                <th>기능</th><th>구내식당맵</th><th>밥풀</th><th>식권대장</th><th>라스트오더·TGTG</th><th class="us">열린식당</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>지도·메뉴 정보 제공</td><td>●</td><td>●</td><td>○</td><td>–</td><td class="us">●</td></tr>
+              <tr><td>이용권 거래(사전판매)</td><td>–</td><td>–</td><td>●</td><td>●</td><td class="us">●</td></tr>
+              <tr><td>나눔 식권·취약계층 복지</td><td>–</td><td>–</td><td>–</td><td>–</td><td class="us">●</td></tr>
+              <tr><td>위탁업체 문제 해결 (식수 예측·강제식수)</td><td>–</td><td>–</td><td>–</td><td>–</td><td class="us">●</td></tr>
+              <tr><td>영양(균형식단) 정보</td><td>–</td><td>–</td><td>–</td><td>–</td><td class="us">●</td></tr>
+            </tbody>
+          </table>
+          <p class="mt-3 text-sm text-stone-500">● 있음 &nbsp; ○ 부분 &nbsp; – 없음 · 창업 과제 시장 조사 기준</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 대상 + CTA -->
+    <section class="max-w-6xl mx-auto px-4 py-16">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="card p-6 text-center"><div class="text-4xl">👵</div><p class="mt-3 font-extrabold text-lg">어르신</p><p class="mt-1 text-stone-600">싱겁고 부드러운 한 끼, 큰 글씨 모드</p></div>
+        <div class="card p-6 text-center"><div class="text-4xl">📚</div><p class="mt-3 font-extrabold text-lg">수험생</p><p class="mt-1 text-stone-600">5천 원 안팎, 매일 바뀌는 든든한 밥</p></div>
+        <div class="card p-6 text-center"><div class="text-4xl">💼</div><p class="mt-3 font-extrabold text-lg">직장인</p><p class="mt-1 text-stone-600">점심값 부담은 줄이고 대기 없이 입장</p></div>
+      </div>
+      <div class="mt-10 rounded-3xl bg-ink text-white p-8 md:p-12 text-center">
+        <p class="text-2xl md:text-3xl font-extrabold leading-snug">지금 문 열린 동네 구내식당을 찾아보세요</p>
+        <p class="mt-3 text-stone-300">식당을 운영하는 위탁업체·기관이라면 파트너 대시보드를 확인해 보세요.</p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="map.html" class="btn btn-primary text-lg px-8">지도 열기</a>
+          <a href="partner.html" class="btn bg-white text-ink text-lg px-8">파트너 대시보드</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    OC.ready.then(() => {
+      const list = OC.restaurants();
+      const priced = list.filter((r) => r.price);
+      document.getElementById('statCount').textContent = list.length + '곳';
+      document.getElementById('statPrice').textContent = priced.length
+        ? (Math.round(priced.reduce((s, r) => s + r.price, 0) / priced.length / 100) / 10).toFixed(1) + '천원'
+        : '-';
+      document.getElementById('statShare').textContent = list.reduce((s, r) => s + OC.shareRemaining(r.id), 0) + '장';
+    });
+  </script>
+</body>
+</html>
