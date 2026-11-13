@@ -163,7 +163,7 @@
           <div data-recent-reviews="${r.id}" class="space-y-2">${rt.count ? '<p class="text-sm text-stone-400">후기를 불러오는 중…</p>' : ''}</div>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <a class="btn btn-outline" href="${base}#menu">📅 식단표 보기</a>
+          <a class="btn btn-outline" href="${base}#menu">📅 주간 식단</a>
           <a class="btn btn-outline" href="${base}#reviews">💬 후기 전체보기</a>
           <a class="btn btn-outline" href="${base}#info">ℹ️ 상세 정보</a>
           ${r.ticketOnSale ? `<a class="btn btn-primary" href="checkout.html?id=${r.id}">🎫 이용권 사기</a>` : '<span class="btn btn-disabled">이용권 준비 중</span>'}
@@ -172,7 +172,6 @@
           <a class="btn btn-dark" href="${OC.kakaoDirections(r)}" target="_blank" rel="noopener">🧭 길 찾기</a>
           <button data-act="share" class="btn btn-outline px-5">🔗 공유</button>
         </div>
-        ${OC.externalLinksHtml(r, '-ml-2')}
         <button data-act="report" class="link-btn -ml-2 text-stone-500">정보가 실제와 다른가요? 제보하기</button>
       </div>`;
   }

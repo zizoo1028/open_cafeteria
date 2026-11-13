@@ -73,7 +73,7 @@
               ${row('위치', `${r.building ? `${esc(r.building)}<br>` : ''}<span class="text-stone-500">${esc(r.address)}</span> <button data-act="copy" class="link-btn">주소 복사</button>`)}
               ${row('전화', r.phone ? `<a href="tel:${esc(r.phone)}" class="underline underline-offset-2">${esc(r.phone)}</a>` : '')}
               ${row('운영 업체', esc(r.operator))}
-              ${row('식단표', r.menuUrl ? `<a href="${esc(r.menuUrl)}" target="_blank" rel="noopener noreferrer" class="link-btn -ml-2">${OC.menuSource(r.menuUrl).text} ↗</a>` : '')}
+              ${row('식단표', `<a href="${esc(OC.menuPageUrl(r))}" target="_blank" rel="noopener noreferrer" class="link-btn -ml-2">식단표 보기 ↗</a>`)}
               ${row('규모', r.capacity ? `하루 약 ${r.capacity}식` : '')}
             </dl>
           </section>
@@ -92,7 +92,6 @@
             <div class="p-3 grid grid-cols-2 gap-2">
               <a href="map.html?id=${r.id}" class="btn btn-outline">🗺️ 지도에서 보기</a>
               <a href="${OC.kakaoDirections(r)}" target="_blank" rel="noopener" class="btn btn-dark">🧭 길 찾기</a>
-              <div class="col-span-2">${OC.externalLinksHtml(r, 'justify-center')}</div>
             </div>
           </div>
           <div class="card p-5 bg-green-50 border-green-100">
@@ -159,7 +158,7 @@
           <button data-week="1" class="chip ${weekOffset === 1 ? 'on' : ''}">다음 주</button>
         </div>
       </div>
-      ${r.menuUrl ? `<div class="mt-4 sm:max-w-sm">${OC.menuPageButton(r)}</div>` : ''}
+      <div class="mt-4 sm:max-w-sm">${OC.menuPageButton(r)}</div>
       ${any ? `
       <div class="mt-4 flex flex-wrap gap-4 text-sm text-stone-600">
         <span><span class="dot macro-c"></span> 탄수화물</span><span><span class="dot macro-p"></span> 단백질</span><span><span class="dot macro-f"></span> 지방</span>
@@ -179,8 +178,7 @@
         <p class="text-4xl">📅</p>
         <p class="mt-3 font-bold">아직 등록된 식단이 없어요</p>
         <p class="mt-1 text-stone-500">${r.type === 'buffet' ? '한식뷔페는 매일 반찬이 바뀌어 식단을 미리 올리지 않는 경우가 많아요.' : '식당이 식단을 등록하면 여기에 표시돼요.'}</p>
-        <p class="mt-1 text-stone-500">${r.menuUrl ? '위 <b>식단표 페이지</b>에서 확인해 보세요.' : '카카오맵·네이버 지도의 메뉴 사진과 후기를 참고해 보세요.'}</p>
-        ${OC.externalLinksHtml(r, 'justify-center mt-3')}
+        <p class="mt-1 text-stone-500">위 <b>식단표 보기</b>에서 식당이 올린 식단을 확인해 보세요.</p>
       </div>`}`;
   }
 

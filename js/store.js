@@ -151,12 +151,8 @@ window.OC = (function () {
   }
   const kakaoDirections = (r) =>
     r.kakaoPlaceId ? `https://map.kakao.com/link/to/${r.kakaoPlaceId}` : `https://map.kakao.com/link/to/${encodeURIComponent(r.name)},${r.lat},${r.lng}`;
-  const kakaoPlaceUrl = (r) => (r.kakaoPlaceId ? `https://place.map.kakao.com/${r.kakaoPlaceId}` : null);
-  // 카카오맵: 장소가 연결돼 있으면 장소 페이지, 아니면 좌표에 핀을 꽂은 지도
-  const kakaoMapUrl = (r) => kakaoPlaceUrl(r) || `https://map.kakao.com/link/map/${encodeURIComponent(r.name)},${r.lat},${r.lng}`;
   // 네이버 지도: API 없이 검색 링크 (같은 이름이 많을 수 있어 시·구를 함께 검색)
   const naverMapUrl = (r) => `https://map.naver.com/p/search/${encodeURIComponent(`${r.name} ${r.address.split(' ').slice(0, 2).join(' ')}`)}`;
-  // 외부 링크는 http(s)만 허용 (javascript: 등 차단)
   // 네이버 지도 장소 주소(홈·메뉴·공유 등 어떤 형태든) → 식단이 올라오는 "소식" 탭 주소로 통일
   // 예: https://map.naver.com/p/entry/place/1397161473?placePath=... , https://m.place.naver.com/restaurant/1397161473/home
   function naverPlaceId(u) {
@@ -169,13 +165,9 @@ window.OC = (function () {
     const id = naverPlaceId(url);
     return id ? `https://map.naver.com/p/entry/place/${id}?placePath=%2Ffeed` : url;
   }
+  // 외부 링크는 http(s)만 허용 (javascript: 등 차단)
   function safeUrl(u) {
     return typeof u === 'string' && /^https?:\/\/\S+$/i.test(u.trim()) ? u.trim() : null;
-  }
-  // 식당 카드·상세에 쓰는 "외부에서 보기" 링크 묶음
-  function externalLinksHtml(r, cls = '') {
-    const a = (href, label) => `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" class="link-btn">${label} ↗</a>`;
-    return `<div class="flex flex-wrap items-center gap-1 text-sm ${cls}"><span class="text-stone-400 mr-1">외부에서 보기</span>${a(kakaoMapUrl(r), '카카오맵')}${a(naverMapUrl(r), '네이버 지도')}</div>`;
   }
   // 식단표 링크가 어디로 연결되는지 주소로 알아내기 → 버튼 문구·색에 사용
   const NAVER = 'bg-[#E8F8EE] text-[#036B30] border border-[#03C75A]/40 hover:bg-[#D5F3E0]';
@@ -201,11 +193,12 @@ window.OC = (function () {
       ? { label: hit.label, text: `${hit.label}에서 식단 보기`, cls: hit.cls }
       : { label: '식단표 페이지', text: '식단표 페이지로 이동', cls: 'bg-green-50 text-green-800 border border-green-200 hover:bg-green-100' };
   }
-  // 식단표 큰 버튼 (링크가 있을 때만). 출처에 따라 "네이버 블로그에서 식단 보기" 등으로 표시
+  // 식단표로 갈 주소: 등록된 식단표 링크, 없으면 네이버 지도에서 "식당 이름 + 시·구" 검색
+  const menuPageUrl = (r) => r.menuUrl || naverMapUrl(r);
+  // "식단표 보기" 큰 버튼 (모든 식당). 색은 연결되는 곳(네이버·카카오 등)에 맞춤
   function menuPageButton(r, cls = '') {
-    if (!r.menuUrl) return '';
-    const src = menuSource(r.menuUrl);
-    return `<a href="${esc(r.menuUrl)}" target="_blank" rel="noopener noreferrer" class="btn w-full ${src.cls} ${cls}">${src.text} ↗</a>`;
+    const url = menuPageUrl(r);
+    return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="btn w-full ${menuSource(url).cls} ${cls}">식단표 보기 ↗</a>`;
   }
 
   /* ---------- 식단 ---------- */
@@ -579,7 +572,7 @@ window.OC = (function () {
     sb, unwrap, KEY, MEAL, WD, TYPE, ready, load, save, mapPlace, openReport,
     ymd, parseYmd, addDays, today, daysFromToday, fmtDate, won, esc, qs,
     restaurants, restaurant, priceTier, subtitle, opensOn, mealsOn, bookableMeals, status, statusBadge, hoursText, nextOpenDate,
-    kakaoDirections, kakaoPlaceUrl, kakaoMapUrl, naverMapUrl, safeUrl, normalizeMenuUrl, externalLinksHtml, menuSource, menuPageButton,
+    kakaoDirections, naverMapUrl, safeUrl, normalizeMenuUrl, menuSource, menuPageUrl, menuPageButton,
     loadMenus, menu, nutrition, macroBar, weekDates, todayMenu,
     loadStats, rating, shareRemaining, stars,
     fetchReviews, addReview,
