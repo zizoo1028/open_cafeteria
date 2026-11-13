@@ -73,7 +73,7 @@
               ${row('위치', `${r.building ? `${esc(r.building)}<br>` : ''}<span class="text-stone-500">${esc(r.address)}</span> <button data-act="copy" class="link-btn">주소 복사</button>`)}
               ${row('전화', r.phone ? `<a href="tel:${esc(r.phone)}" class="underline underline-offset-2">${esc(r.phone)}</a>` : '')}
               ${row('운영 업체', esc(r.operator))}
-              ${row('식단표', r.menuUrl ? `<a href="${esc(r.menuUrl)}" target="_blank" rel="noopener noreferrer" class="link-btn -ml-2">식단표 페이지로 이동 ↗</a>` : '')}
+              ${row('식단표', r.menuUrl ? `<a href="${esc(r.menuUrl)}" target="_blank" rel="noopener noreferrer" class="link-btn -ml-2">${OC.menuSource(r.menuUrl).text} ↗</a>` : '')}
               ${row('규모', r.capacity ? `하루 약 ${r.capacity}식` : '')}
             </dl>
           </section>

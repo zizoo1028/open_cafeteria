@@ -88,7 +88,7 @@ window.OC = (function () {
       ticketOnSale: p.ticket_on_sale,
       tags: p.tags || [],
       desc: p.description || '',
-      menuUrl: safeUrl(p.menu_url),
+      menuUrl: normalizeMenuUrl(p.menu_url),
       status: p.status,
     };
   }
@@ -157,6 +157,18 @@ window.OC = (function () {
   // 네이버 지도: API 없이 검색 링크 (같은 이름이 많을 수 있어 시·구를 함께 검색)
   const naverMapUrl = (r) => `https://map.naver.com/p/search/${encodeURIComponent(`${r.name} ${r.address.split(' ').slice(0, 2).join(' ')}`)}`;
   // 외부 링크는 http(s)만 허용 (javascript: 등 차단)
+  // 네이버 지도 장소 주소(홈·메뉴·공유 등 어떤 형태든) → 식단이 올라오는 "소식" 탭 주소로 통일
+  // 예: https://map.naver.com/p/entry/place/1397161473?placePath=... , https://m.place.naver.com/restaurant/1397161473/home
+  function naverPlaceId(u) {
+    const m = String(u || '').match(/(?:map\.naver\.com\/p\/(?:entry|search\/[^/?#]+|[^/?#]+)\/place\/|place\.naver\.com\/[a-z]+\/)(\d{5,})/i);
+    return m ? m[1] : null;
+  }
+  function normalizeMenuUrl(u) {
+    const url = safeUrl(u);
+    if (!url) return null;
+    const id = naverPlaceId(url);
+    return id ? `https://map.naver.com/p/entry/place/${id}?placePath=%2Ffeed` : url;
+  }
   function safeUrl(u) {
     return typeof u === 'string' && /^https?:\/\/\S+$/i.test(u.trim()) ? u.trim() : null;
   }
@@ -165,11 +177,36 @@ window.OC = (function () {
     const a = (href, label) => `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" class="link-btn">${label} ↗</a>`;
     return `<div class="flex flex-wrap items-center gap-1 text-sm ${cls}"><span class="text-stone-400 mr-1">외부에서 보기</span>${a(kakaoMapUrl(r), '카카오맵')}${a(naverMapUrl(r), '네이버 지도')}</div>`;
   }
-  // "식단표 페이지로 이동" 큰 버튼 (링크가 있을 때만)
-  const menuPageButton = (r, cls = '') =>
-    r.menuUrl
-      ? `<a href="${esc(r.menuUrl)}" target="_blank" rel="noopener noreferrer" class="btn w-full bg-green-50 text-green-800 border border-green-200 hover:bg-green-100 ${cls}">식단표 페이지로 이동 ↗</a>`
-      : '';
+  // 식단표 링크가 어디로 연결되는지 주소로 알아내기 → 버튼 문구·색에 사용
+  const NAVER = 'bg-[#E8F8EE] text-[#036B30] border border-[#03C75A]/40 hover:bg-[#D5F3E0]';
+  const KAKAO = 'bg-[#FFF8CC] text-[#3C1E1E] border border-[#FEE500] hover:bg-[#FFF1A6]';
+  const MENU_SOURCES = [
+    { re: /(^|\.)blog\.naver\.com$/, label: '네이버 블로그', cls: NAVER },
+    { re: /(^|\.)cafe\.naver\.com$/, label: '네이버 카페', cls: NAVER },
+    { re: /(^|\.)(map\.naver\.com|place\.naver\.com|m\.place\.naver\.com)$/, label: '네이버 플레이스', cls: NAVER },
+    { re: /(^|\.)naver\.(me|com)$/, label: '네이버', cls: NAVER },
+    { re: /(^|\.)pf\.kakao\.com$/, label: '카카오톡 채널', cls: KAKAO },
+    { re: /(^|\.)(place\.map\.kakao\.com|map\.kakao\.com|kko\.to)$/, label: '카카오맵', cls: KAKAO },
+    { re: /(^|\.)kakao\.com$/, label: '카카오', cls: KAKAO },
+    { re: /(^|\.)band\.us$/, label: '밴드', cls: 'bg-green-50 text-green-800 border border-green-200 hover:bg-green-100' },
+    { re: /(^|\.)instagram\.com$/, label: '인스타그램', cls: 'bg-pink-50 text-pink-800 border border-pink-200 hover:bg-pink-100' },
+  ];
+  function menuSource(url) {
+    let host = '';
+    try {
+      host = new URL(url).hostname.toLowerCase();
+    } catch (e) {}
+    const hit = MENU_SOURCES.find((s) => s.re.test(host));
+    return hit
+      ? { label: hit.label, text: `${hit.label}에서 식단 보기`, cls: hit.cls }
+      : { label: '식단표 페이지', text: '식단표 페이지로 이동', cls: 'bg-green-50 text-green-800 border border-green-200 hover:bg-green-100' };
+  }
+  // 식단표 큰 버튼 (링크가 있을 때만). 출처에 따라 "네이버 블로그에서 식단 보기" 등으로 표시
+  function menuPageButton(r, cls = '') {
+    if (!r.menuUrl) return '';
+    const src = menuSource(r.menuUrl);
+    return `<a href="${esc(r.menuUrl)}" target="_blank" rel="noopener noreferrer" class="btn w-full ${src.cls} ${cls}">${src.text} ↗</a>`;
+  }
 
   /* ---------- 식단 ---------- */
   async function loadMenus(placeIds, from, to) {
@@ -542,7 +579,7 @@ window.OC = (function () {
     sb, unwrap, KEY, MEAL, WD, TYPE, ready, load, save, mapPlace, openReport,
     ymd, parseYmd, addDays, today, daysFromToday, fmtDate, won, esc, qs,
     restaurants, restaurant, priceTier, subtitle, opensOn, mealsOn, bookableMeals, status, statusBadge, hoursText, nextOpenDate,
-    kakaoDirections, kakaoPlaceUrl, kakaoMapUrl, naverMapUrl, safeUrl, externalLinksHtml, menuPageButton,
+    kakaoDirections, kakaoPlaceUrl, kakaoMapUrl, naverMapUrl, safeUrl, normalizeMenuUrl, externalLinksHtml, menuSource, menuPageButton,
     loadMenus, menu, nutrition, macroBar, weekDates, todayMenu,
     loadStats, rating, shareRemaining, stars,
     fetchReviews, addReview,

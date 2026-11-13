@@ -431,7 +431,14 @@
           <label class="option"><input type="checkbox" name="ticket_on_sale" ${p.ticket_on_sale ? 'checked' : ''}> 이용권 판매</label>
         </div>
         ${field('외부인 입장 조건', input('public_note', p.public_note, 'placeholder="예: 외부인 12:10 이후 입장"'))}
-        ${field('식단표 페이지 주소', `<div class="flex gap-2">${input('menu_url', p.menu_url, 'type="url" placeholder="https://… (구청 식단 게시판, 인스타그램 등)"')}${p.menu_url ? `<a href="${esc(p.menu_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline shrink-0">열어 보기 ↗</a>` : ''}</div>`)}
+        <div>
+          ${field('식단표 페이지 주소', `<div class="flex gap-2">${input('menu_url', p.menu_url, 'type="url" placeholder="https://… (네이버 지도 장소, 네이버 블로그, 카카오톡 채널, 구청 식단 게시판 등)"')}${p.menu_url ? `<a href="${esc(p.menu_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline shrink-0">열어 보기 ↗</a>` : ''}</div>`)}
+          <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-stone-500">
+            <a data-naver-find target="_blank" rel="noopener noreferrer" class="link-btn -ml-2" href="${esc(OC.naverMapUrl({ name: p.name || '', address: p.address || '' }))}">네이버 지도에서 찾기 ↗</a>
+            <span>장소 주소를 복사해 붙여 넣으면 식단이 올라오는 <b>소식</b> 탭 주소로 자동으로 바뀌어요.</span>
+          </div>
+          <p data-menu-preview class="mt-1 text-xs text-green-700"></p>
+        </div>
         ${field('태그 (쉼표로 구분)', input('tags', (p.tags || []).join(', '), 'placeholder="예: 균형식단, 직장인 추천"'))}
         ${field('소개', `<textarea name="description" class="input min-h-[80px]">${esc(p.description || '')}</textarea>`)}
 
@@ -455,6 +462,21 @@
     const form = ov.querySelector('form');
     const f = form.elements;
     const val = (n) => f.namedItem(n).value.trim();
+
+    // 식단표 주소: 붙여 넣으면 어디로 연결되는지 미리 보여 주고, 이름·주소가 바뀌면 "네이버 지도에서 찾기" 링크도 갱신
+    function previewMenuUrl() {
+      const raw = val('menu_url');
+      const box = form.querySelector('[data-menu-preview]');
+      const norm = OC.normalizeMenuUrl(raw);
+      if (!raw) box.textContent = '';
+      else if (!norm) box.innerHTML = '<span class="text-red-600">https:// 로 시작하는 주소를 넣어 주세요.</span>';
+      else box.textContent = `→ ${OC.menuSource(norm).text}${norm !== raw ? ' (소식 탭 주소로 바꿔 저장해요)' : ''}`;
+      form.querySelector('[data-naver-find]').href = OC.naverMapUrl({ name: val('name'), address: val('address') });
+    }
+    form.addEventListener('input', (e) => {
+      if (['menu_url', 'name', 'address'].includes(e.target.name)) previewMenuUrl();
+    });
+    previewMenuUrl();
     const err = form.querySelector('[data-error]');
     const fail = (msg) => {
       err.textContent = msg;
@@ -624,7 +646,7 @@
         saturday: f.namedItem('saturday').checked,
         ticket_on_sale: f.namedItem('ticket_on_sale').checked,
         public_note: val('public_note') || null,
-        menu_url: val('menu_url') || null,
+        menu_url: OC.normalizeMenuUrl(val('menu_url')) || (val('menu_url') || null),
         tags: val('tags').split(/[,;]/).map((t) => t.trim()).filter(Boolean),
         description: val('description') || null,
       };
@@ -882,7 +904,7 @@
       ticket_on_sale: yes(g('이용권판매')),
       tags: g('태그').split(/[;,]/).map((t) => t.trim()).filter(Boolean),
       description: g('소개') || null,
-      menu_url: OC.safeUrl(g('식단표링크')),
+      menu_url: OC.normalizeMenuUrl(g('식단표링크')),
       source: 'manual',
       status: 'candidate',
     };
