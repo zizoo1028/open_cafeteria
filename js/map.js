@@ -31,6 +31,32 @@
       const overlay = new kakao.maps.CustomOverlay({ position: latLng(r), content: el, xAnchor: 0, yAnchor: 0, clickable: true });
       overlays.set(r.id, { overlay, el });
     });
+    spreadSamePlace();
+  }
+  // 같은 자리(같은 건물)에 식당이 둘 이상이면 핀이 겹치지 않게 가로로 나란히 붙여 배치
+  function spreadSamePlace() {
+    const groups = new Map();
+    OC.restaurants().forEach((r) => {
+      const key = `${r.lat.toFixed(4)},${r.lng.toFixed(4)}`; // 약 10m 이내는 같은 자리로 봄
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(r);
+    });
+    const GAP = 4;
+    // 핀 폭 추정: 글자 수 × 글자 폭 + 좌우 여백 (실제 폭은 CSS 최대 160px)
+    const pinWidth = (r) => {
+      const text = [...r.short].reduce((w, ch) => w + (/[가-힣]/.test(ch) ? 14 : 8), 0);
+      return Math.min(160, text) + 28 + (r.ticketOnSale ? 16 : 0);
+    };
+    groups.forEach((list) => {
+      if (list.length < 2) return;
+      const widths = list.map(pinWidth);
+      const total = widths.reduce((a, b) => a + b, 0) + GAP * (list.length - 1);
+      let x = -total / 2;
+      list.forEach((r, i) => {
+        overlays.get(r.id).el.style.transform = `translateX(${Math.round(x + widths[i] / 2)}px)`;
+        x += widths[i] + GAP;
+      });
+    });
   }
   function setActivePin(id) {
     overlays.forEach(({ overlay, el }, rid) => {
