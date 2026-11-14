@@ -42,9 +42,27 @@
   }
 
   /* ---------- 필터 ---------- */
+  // 검색용 글자 모음 (이름·건물·주소·태그·운영사·소개·오늘 식단) — 처음 검색할 때 한 번만 만들어 둠
+  const docs = new Map();
+  function searchDoc(r) {
+    let d = docs.get(r.id);
+    if (!d) {
+      const tm = OC.todayMenu(r);
+      const menu = tm && tm.menu ? tm.menu.items.map((i) => i.n).join(' ') : '';
+      // 이름은 두 번 넣어 이름에서 맞을수록 앞에 오게 함
+      d = OCSearch.prepare([r.name, r.name, r.short, r.building, r.address, r.operator, r.desc, ...r.tags, menu].filter(Boolean).join(' '));
+      docs.set(r.id, d);
+    }
+    return d;
+  }
+  const scores = new Map(); // 현재 검색어의 점수 (정렬용)
   function matches(r) {
-    const q = state.q.trim().toLowerCase();
-    if (q && ![r.name, r.building, r.address, ...r.tags].join(' ').toLowerCase().includes(q)) return false;
+    const q = state.q.trim();
+    if (q) {
+      const s = OCSearch.score(q, searchDoc(r));
+      if (!s) return false;
+      scores.set(r.id, s);
+    }
     if (state.type !== 'all' && r.type !== state.type) return false;
     if (state.tier !== 'all' && OC.priceTier(r) !== state.tier) return false;
     if (state.openNow && !OC.status(r).open) return false;
@@ -54,7 +72,15 @@
   }
   const dist = (r) => OC.distance(state.me, r);
   function visible() {
+    scores.clear();
     const list = OC.restaurants().filter(matches);
+    if (state.q.trim()) {
+      // 모든 단어가 맞는 식당이 있으면 일부만 맞은 후보(점수 30 이하)는 숨김
+      const best = Math.max(0, ...list.map((r) => scores.get(r.id)));
+      const strict = best > 30 ? list.filter((r) => scores.get(r.id) > 30) : list;
+      // 검색 중에는 잘 맞는 순, 점수가 같으면 가까운 순
+      return strict.sort((a, b) => scores.get(b.id) - scores.get(a.id) || (state.me ? dist(a) - dist(b) : 0));
+    }
     return state.me ? list.sort((a, b) => dist(a) - dist(b)) : list;
   }
 
