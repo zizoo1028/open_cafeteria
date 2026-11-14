@@ -101,8 +101,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .pin {
   --pin: #f97316;
   position: absolute; left: 0; top: 0;
-  /* --dx: 같은 자리 식당끼리 나란히 놓을 때 옆으로 밀어낸 거리 (js/map.js). 화살표 끝은 항상 실제 건물 위치를 가리킴 */
-  transform: translate(calc(-50% + var(--dx, 0px)), calc(-100% - 9px));
+  /* --dy: 같은 건물의 위층 식당을 아래 핀 위로 쌓아 올린 높이 (js/map.js) */
+  transform: translate(-50%, calc(-100% - 9px - var(--dy, 0px)));
   display: flex; align-items: center; gap: 3px; white-space: nowrap;
   padding: 4px 10px; border-radius: 999px; border: 2px solid #fff;
   background: var(--pin); color: #fff; font-weight: 700; font-size: 13px; line-height: 1.3;
@@ -110,13 +110,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   transition: transform .15s;
 }
 .pin::after {
-  content: ''; position: absolute; left: clamp(14px, calc(50% - var(--dx, 0px)), calc(100% - 14px)); bottom: -10px; transform: translateX(-50%);
+  content: ''; position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%);
   border: 6px solid transparent; border-top: 8px solid var(--pin);
 }
+.pin-anchor[data-stack-up] .pin::after { display: none; }
 .pin-low { --pin: #16a34a; }
 .pin-mid { --pin: #f97316; }
 .pin-high { --pin: #7c3aed; }
-.pin-active { --pin: #3b2a20; transform: translate(calc(-50% + var(--dx, 0px)), calc(-100% - 9px)) scale(1.15); transform-origin: 50% 100%; }
+.pin-active { --pin: #3b2a20; transform: translate(-50%, calc(-100% - 9px - var(--dy, 0px))) scale(1.15); transform-origin: 50% 100%; }
 .pin-icons { font-size: 11px; }
 .pin-label { max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
 .me-dot {

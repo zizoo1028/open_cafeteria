@@ -33,37 +33,38 @@
     });
     spreadSamePlace();
   }
-  // 같은 자리(같은 건물)에 식당이 둘 이상이면 핀이 겹치지 않게 가로로 나란히 붙여 배치
+  // 같은 건물(같은 자리)에 식당이 둘 이상이면 낮은 층 핀을 건물 위치에 두고, 위층 핀을 바로 위에 차곡차곡 붙여 표시
+  const floorOf = (r) => {
+    const m = String(r.building || '').match(/(지하|B)?\s*(\d+)\s*층/);
+    if (!m) return 1; // 층 정보가 없으면 1층으로 봄
+    return m[1] ? -Number(m[2]) : Number(m[2]);
+  };
   function spreadSamePlace() {
     const groups = new Map();
     OC.restaurants().forEach((r) => {
-      const key = `${r.lat.toFixed(4)},${r.lng.toFixed(4)}`; // 약 10m 이내는 같은 자리로 봄
+      const key = `${r.lat.toFixed(4)},${r.lng.toFixed(4)}`; // 약 10m 이내는 같은 건물로 봄
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(r);
     });
-    const GAP = 4;
-    // 핀 폭 추정: 글자 수 × 글자 폭 + 좌우 여백 (실제 폭은 CSS 최대 160px)
-    const pinWidth = (r) => {
-      const text = [...r.short].reduce((w, ch) => w + (/[가-힣]/.test(ch) ? 14 : 8), 0);
-      return Math.min(160, text) + 28 + (r.ticketOnSale ? 16 : 0);
-    };
+    const STEP = 30; // 핀 한 칸 높이(px)
     groups.forEach((list) => {
       if (list.length < 2) return;
-      const widths = list.map(pinWidth);
-      const total = widths.reduce((a, b) => a + b, 0) + GAP * (list.length - 1);
-      let x = -total / 2;
+      list.sort((a, b) => floorOf(a) - floorOf(b) || a.id - b.id);
       list.forEach((r, i) => {
-        overlays.get(r.id).el.style.setProperty('--dx', `${Math.round(x + widths[i] / 2)}px`);
-        x += widths[i] + GAP;
+        const el = overlays.get(r.id).el;
+        el.style.setProperty('--dy', `${i * STEP}px`);
+        if (i > 0) el.dataset.stackUp = '1'; // 위층 핀은 화살표 없이 아래 핀에 붙임
+        overlays.get(r.id).base = list.length - i; // 아래층일수록 위로(화살표가 가려지지 않게)
+        overlays.get(r.id).overlay.setZIndex(list.length - i);
       });
     });
   }
   function setActivePin(id) {
-    overlays.forEach(({ overlay, el }, rid) => {
+    overlays.forEach(({ overlay, el, base }, rid) => {
       const on = rid === id;
       el.innerHTML = pinHtml(OC.restaurant(rid), on);
       el.classList.toggle('is-active', on);
-      overlay.setZIndex(on ? 10 : 0);
+      overlay.setZIndex(on ? 10 : base || 0);
     });
   }
 
