@@ -52,7 +52,7 @@
       list.sort((a, b) => floorOf(a) - floorOf(b) || a.id - b.id);
       list.forEach((r, i) => {
         const el = overlays.get(r.id).el;
-        el.style.setProperty('--dy', `${i * STEP}px`);
+        el.style.transform = `translateY(-${i * STEP}px)`; // 핀 묶음 전체를 위로 올림 (CSS 캐시와 무관하게 동작)
         if (i > 0) el.dataset.stackUp = '1'; // 위층 핀은 화살표 없이 아래 핀에 붙임
         overlays.get(r.id).base = list.length - i; // 아래층일수록 위로(화살표가 가려지지 않게)
         overlays.get(r.id).overlay.setZIndex(list.length - i);
