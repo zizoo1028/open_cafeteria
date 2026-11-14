@@ -53,7 +53,7 @@
       const total = widths.reduce((a, b) => a + b, 0) + GAP * (list.length - 1);
       let x = -total / 2;
       list.forEach((r, i) => {
-        overlays.get(r.id).el.style.transform = `translateX(${Math.round(x + widths[i] / 2)}px)`;
+        overlays.get(r.id).el.style.setProperty('--dx', `${Math.round(x + widths[i] / 2)}px`);
         x += widths[i] + GAP;
       });
     });
