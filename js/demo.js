@@ -9,11 +9,12 @@
 (function () {
   const FLAG = 'oc_demo';
   const STATE_KEY = 'oc_demo_state';
-  const IDLE_MS = 120000; // 이 시간 동안 조작이 없으면 처음으로
+  const IDLE_MS = 60000; // 이 시간 동안 조작이 없으면 처음으로 돌아가 대기 화면을 보여 줌
   const WARN_MS = 10000; // 복귀 전 안내 시간
 
   /* ---------- 켜고 끄기 ---------- */
   const params = new URLSearchParams(location.search);
+  const justEntered = params.get('demo') === '1'; // ?demo=1 로 막 들어온 경우 (대기 화면부터 보여 줌)
   try {
     if (params.get('demo') === '1') localStorage.setItem(FLAG, '1');
     if (params.get('demo') === '0') {
@@ -252,10 +253,11 @@
   /* ---------- 제보·로그인·로그아웃 ---------- */
   OC.openReport = () => OC.toast('체험 모드에서는 제보가 전송되지 않아요. 실제 서비스에서 이용해 주세요');
   OC.signIn = () => OC.toast('체험 모드에서는 로그인 없이 모두 이용할 수 있어요');
-  function resetDemo(goHome = true) {
+  function resetDemo(goHome = true, attract = false) {
     S = blank();
     try {
       localStorage.removeItem(STATE_KEY);
+      if (attract) localStorage.setItem('oc_attract', '1'); // 처음 화면으로 돌아간 뒤 대기 화면을 켬
     } catch (e) {}
     if (goHome) location.href = 'index.html';
   }
@@ -295,6 +297,14 @@
     html.demo-mode body { -webkit-user-select: none; user-select: none; }
     html.demo-mode input, html.demo-mode textarea { -webkit-user-select: text; user-select: text; }
     .demo-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.25rem .6rem; border-radius:999px; background:#fff7ed; color:#c2410c; font-weight:800; font-size:.85rem; border:1px solid #fed7aa; }
+    .demo-attract { position:fixed; inset:0; z-index:5000; background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; cursor:pointer; -webkit-user-select:none; user-select:none; }
+    .demo-attract .da-logo { font-size:clamp(4rem,12vw,7rem); animation:daPulse 2.4s ease-in-out infinite; }
+    .demo-attract .da-title { margin-top:1rem; font-size:clamp(2.2rem,7vw,4.2rem); font-weight:900; letter-spacing:-.02em; color:#fb923c; }
+    .demo-attract .da-line { margin-top:2.2rem; min-height:3.6rem; font-size:clamp(1.3rem,3.8vw,2.1rem); font-weight:700; line-height:1.4; max-width:34ch; opacity:0; transition:opacity .5s ease; }
+    .demo-attract .da-line.on { opacity:1; }
+    .demo-attract .da-touch { position:absolute; bottom:max(3rem,8vh); font-size:clamp(1.1rem,3vw,1.6rem); font-weight:800; color:#fdba74; animation:daBlink 1.8s ease-in-out infinite; }
+    @keyframes daPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.12); } }
+    @keyframes daBlink { 0%,100% { opacity:.35; } 50% { opacity:1; } }
     .demo-toast { position:fixed; left:50%; bottom:1.5rem; transform:translateX(-50%); z-index:3000; background:#3b2a20; color:#fff; padding:.9rem 1.4rem; border-radius:1rem; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.3); }`;
   document.head.appendChild(style);
 
@@ -335,7 +345,8 @@
   }
   function toIdle() {
     const onHome = /(^|\/)(index\.html)?$/.test(location.pathname);
-    if (onHome && fresh()) return arm(); // 이미 처음 화면이고 입력 내용도 없으면 그대로
+    if (attractEl) return;
+    if (onHome && fresh()) return showAttract(); // 이미 처음 화면이고 입력 내용도 없으면 바로 대기 화면
     let left = Math.round(WARN_MS / 1000);
     warnEl = document.createElement('div');
     warnEl.className = 'demo-toast';
@@ -346,10 +357,67 @@
       left -= 1;
       if (left <= 0) {
         clearWarn();
-        resetDemo(true);
+        resetDemo(true, true);
       } else paint();
     }, 1000);
   }
+  /* ---------- 대기 화면 (검은 화면 + 호기심 문구, 터치하면 서비스 시작) ---------- */
+  let attractEl = null;
+  function showAttract() {
+    if (attractEl) return;
+    clearWarn();
+    // 식당 수는 문구를 바꿀 때마다 그때의 DB 값으로 계산 (대기 화면이 먼저 뜨고 데이터가 나중에 올 수 있음)
+    const lines = () => {
+      const count = (OC.restaurants && OC.restaurants().length) || 0;
+      return [
+        '오늘 점심, 어디서 드세요?',
+        '회사 구내식당, 사실 아무나 먹을 수 있다면?',
+        '6천 원 한 끼가 근처에 숨어 있어요',
+        count ? `우리 동네에 열려 있는 식당 ${count}곳, 찾아보세요` : '우리 동네에 열려 있는 식당, 찾아보세요',
+        '내가 낸 한 끼가 이웃의 따뜻한 식사가 된다면?',
+        '오늘 메뉴, 먹기 전에 먼저 확인하세요',
+      ];
+    };
+    attractEl = document.createElement('div');
+    attractEl.className = 'demo-attract';
+    attractEl.setAttribute('role', 'button');
+    attractEl.setAttribute('aria-label', '화면을 터치하면 시작합니다');
+    attractEl.innerHTML = `
+      <div class="da-logo">🍚</div>
+      <div class="da-title">우리동네 열린식당</div>
+      <div class="da-line" id="daLine"></div>
+      <div class="da-touch">👆 화면을 터치해 보세요</div>`;
+    document.body.appendChild(attractEl);
+    const line = attractEl.querySelector('#daLine');
+    let i = Math.floor(Math.random() * 6);
+    const next = () => {
+      line.classList.remove('on');
+      setTimeout(() => {
+        const all = lines();
+        line.textContent = all[i % all.length];
+        i += 1;
+        line.classList.add('on');
+      }, 500);
+    };
+    next();
+    const rot = setInterval(next, 4500);
+    attractEl.addEventListener('click', () => {
+      clearInterval(rot);
+      attractEl.remove();
+      attractEl = null;
+      if (!/(^|\/)(index\.html)?$/.test(location.pathname)) location.href = 'index.html';
+      arm();
+    });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    let flagged = false;
+    try {
+      flagged = localStorage.getItem('oc_attract') === '1';
+      localStorage.removeItem('oc_attract');
+    } catch (e) {}
+    if (justEntered || flagged) showAttract();
+  });
+
   function arm() {
     clearTimeout(idleTimer);
     idleTimer = setTimeout(toIdle, IDLE_MS);
