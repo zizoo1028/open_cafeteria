@@ -502,6 +502,7 @@
 
   /* ---------- 체험 모드: 전시장 기준 ---------- */
   // 전시장 주소를 좌표로 바꿔 한 번만 기억해 둠 (카카오 주소 검색)
+  const DEMO_LEVEL = 8; // 카카오 지도 확대 단계 (숫자가 클수록 넓게 보임)
   let venue = null;
   function findVenue() {
     if (venue) return Promise.resolve(venue);
@@ -524,7 +525,7 @@
       venueOverlay.setMap(map);
     }
     if (center) {
-      map.setLevel(4);
+      map.setLevel(DEMO_LEVEL); // 전시장 주변 식당이 한눈에 보이도록 넓게 (한강 일대가 보이는 정도)
       map.panTo(latLng(v));
     }
     refresh();
