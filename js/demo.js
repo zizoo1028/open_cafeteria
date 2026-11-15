@@ -298,13 +298,12 @@
     html.demo-mode input, html.demo-mode textarea { -webkit-user-select: text; user-select: text; }
     .demo-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.25rem .6rem; border-radius:999px; background:#fff7ed; color:#c2410c; font-weight:800; font-size:.85rem; border:1px solid #fed7aa; }
     .demo-attract { position:fixed; inset:0; z-index:5000; background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; cursor:pointer; -webkit-user-select:none; user-select:none; }
-    .demo-attract .da-logo { font-size:clamp(4rem,12vw,7rem); animation:daPulse 2.4s ease-in-out infinite; }
-    .demo-attract .da-title { margin-top:1rem; font-size:clamp(2.2rem,7vw,4.2rem); font-weight:900; letter-spacing:-.02em; color:#fb923c; }
-    .demo-attract .da-line { margin-top:2.2rem; min-height:3.6rem; font-size:clamp(1.3rem,3.8vw,2.1rem); font-weight:700; line-height:1.4; max-width:34ch; opacity:0; transition:opacity .5s ease; }
+    .demo-attract .da-title { font-size:clamp(2.4rem,8vw,4.6rem); font-weight:800; letter-spacing:.04em; }
+    .demo-attract .da-rule { width:3rem; height:1px; background:rgba(255,255,255,.55); margin:2.2rem 0; }
+    .demo-attract .da-line { min-height:4.2rem; font-size:clamp(1.25rem,3.6vw,2rem); font-weight:400; line-height:1.7; letter-spacing:.02em; max-width:22em; word-break:keep-all; opacity:0; transition:opacity .9s ease; }
     .demo-attract .da-line.on { opacity:1; }
-    .demo-attract .da-touch { position:absolute; bottom:max(3rem,8vh); font-size:clamp(1.1rem,3vw,1.6rem); font-weight:800; color:#fdba74; animation:daBlink 1.8s ease-in-out infinite; }
-    @keyframes daPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.12); } }
-    @keyframes daBlink { 0%,100% { opacity:.35; } 50% { opacity:1; } }
+    .demo-attract .da-touch { position:absolute; bottom:max(3rem,8vh); font-size:clamp(1rem,2.6vw,1.35rem); font-weight:400; letter-spacing:.15em; color:#fff; animation:daBlink 2.6s ease-in-out infinite; }
+    @keyframes daBlink { 0%,100% { opacity:.25; } 50% { opacity:.8; } }
     .demo-toast { position:fixed; left:50%; bottom:1.5rem; transform:translateX(-50%); z-index:3000; background:#3b2a20; color:#fff; padding:.9rem 1.4rem; border-radius:1rem; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.3); }`;
   document.head.appendChild(style);
 
@@ -370,12 +369,12 @@
     const lines = () => {
       const count = (OC.restaurants && OC.restaurants().length) || 0;
       return [
-        '오늘 점심, 어디서 드세요?',
-        '회사 구내식당, 사실 아무나 먹을 수 있다면?',
-        '6천 원 한 끼가 근처에 숨어 있어요',
-        count ? `우리 동네에 열려 있는 식당 ${count}곳, 찾아보세요` : '우리 동네에 열려 있는 식당, 찾아보세요',
-        '내가 낸 한 끼가 이웃의 따뜻한 식사가 된다면?',
-        '오늘 메뉴, 먹기 전에 먼저 확인하세요',
+        '누구에게나, 따뜻한 밥 한 끼는 필요합니다',
+        '값은 가볍게, 영양은 든든하게',
+        '닫혀 있던 식당의 문을 열었습니다',
+        count ? `오늘, 우리 동네 ${count}곳의 식당이 문을 열고 있습니다` : '오늘, 우리 동네의 식당이 문을 열고 있습니다',
+        '한 끼가 걱정인 이웃에게, 든든한 밥상을',
+        '당신이 나눈 한 끼가, 누군가의 하루가 됩니다',
       ];
     };
     attractEl = document.createElement('div');
@@ -383,13 +382,13 @@
     attractEl.setAttribute('role', 'button');
     attractEl.setAttribute('aria-label', '화면을 터치하면 시작합니다');
     attractEl.innerHTML = `
-      <div class="da-logo">🍚</div>
       <div class="da-title">우리동네 열린식당</div>
+      <div class="da-rule"></div>
       <div class="da-line" id="daLine"></div>
-      <div class="da-touch">👆 화면을 터치해 보세요</div>`;
+      <div class="da-touch">화면을 터치해 주세요</div>`;
     document.body.appendChild(attractEl);
     const line = attractEl.querySelector('#daLine');
-    let i = Math.floor(Math.random() * 6);
+    let i = 0; // 늘 같은 문구로 시작
     const next = () => {
       line.classList.remove('on');
       setTimeout(() => {
@@ -397,10 +396,10 @@
         line.textContent = all[i % all.length];
         i += 1;
         line.classList.add('on');
-      }, 500);
+      }, 900);
     };
     next();
-    const rot = setInterval(next, 4500);
+    const rot = setInterval(next, 6000);
     attractEl.addEventListener('click', () => {
       clearInterval(rot);
       attractEl.remove();
