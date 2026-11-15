@@ -381,9 +381,20 @@
   panel.addEventListener('click', onAction);
   sheetBody.addEventListener('click', onAction);
 
+  // 검색하면 정확도가 가장 높은 식당 위치로 지도를 옮김 (타자 칠 때마다 움직이지 않게 잠깐 기다림)
+  let moveTimer = null;
+  function moveToBestMatch() {
+    if (!map || !state.q.trim()) return;
+    const best = visible()[0];
+    if (!best) return;
+    if (map.getLevel() > 5) map.setLevel(4); // 너무 멀리서 보고 있으면 가까이
+    map.panTo(latLng(best));
+  }
   document.getElementById('search').addEventListener('input', (e) => {
     state.q = e.target.value;
     refresh();
+    clearTimeout(moveTimer);
+    moveTimer = setTimeout(moveToBestMatch, 350);
   });
   document.getElementById('chips').addEventListener('click', (e) => {
     const chip = e.target.closest('.chip');
