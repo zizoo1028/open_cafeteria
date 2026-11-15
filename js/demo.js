@@ -33,6 +33,16 @@
   } catch (e) {}
   if (!on || !window.OC) return;
 
+  // 체험 모드의 첫 화면은 소개 페이지가 아니라 지도 검색. 처음 화면(index)으로 오면 지도 검색으로 보냄
+  const HOME = 'map.html';
+  if (/(^|\/)(index\.html)?$/.test(location.pathname)) {
+    try {
+      if (justEntered) localStorage.setItem('oc_attract', '1'); // 막 들어온 경우 지도 화면에서 대기 화면부터
+    } catch (e) {}
+    location.replace(HOME);
+    return;
+  }
+
   window.OC_DEMO = true;
   // 전시장 위치: 체험 모드의 지도 검색은 이 주소를 중심으로 열리고, 목록은 여기서 가까운 순으로 정렬됨
   window.OC_DEMO_VENUE = { name: '전시장', address: '서울특별시 서초구 강남대로 27' };
@@ -259,7 +269,7 @@
       localStorage.removeItem(STATE_KEY);
       if (attract) localStorage.setItem('oc_attract', '1'); // 처음 화면으로 돌아간 뒤 대기 화면을 켬
     } catch (e) {}
-    if (goHome) location.href = 'index.html';
+    if (goHome) location.href = HOME;
   }
   OC.signOut = () => resetDemo(true);
 
@@ -342,9 +352,11 @@
     clearInterval(warnTimer);
   }
   function toIdle() {
-    const onHome = /(^|\/)(index\.html)?$/.test(location.pathname);
     if (attractEl) return;
-    if (onHome && fresh()) return showAttract(); // 이미 처음 화면이고 입력 내용도 없으면 바로 대기 화면
+    // 지도 검색 첫 화면 그대로(선택한 식당·검색어 없음)이고 입력 내용도 없으면 바로 대기 화면
+    const search = document.getElementById('search');
+    const clean = /(^|\/)map\.html$/.test(location.pathname) && !location.search && !(search && search.value);
+    if (clean && fresh()) return showAttract();
     let left = Math.round(WARN_MS / 1000);
     warnEl = document.createElement('div');
     warnEl.className = 'demo-toast';
@@ -377,7 +389,7 @@
     attractEl.addEventListener('click', () => {
       attractEl.remove();
       attractEl = null;
-      if (!/(^|\/)(index\.html)?$/.test(location.pathname)) location.href = 'index.html';
+      if (!/(^|\/)map\.html$/.test(location.pathname) || location.search) location.href = HOME;
       arm();
     });
   }
