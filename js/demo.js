@@ -369,12 +369,13 @@
     const lines = () => {
       const count = (OC.restaurants && OC.restaurants().length) || 0;
       return [
-        '누구에게나, 따뜻한 밥 한 끼는 필요합니다',
-        '값은 가볍게, 영양은 든든하게',
-        '닫혀 있던 식당의 문을 열었습니다',
-        count ? `오늘, 우리 동네 ${count}곳의 식당이 문을 열고 있습니다` : '오늘, 우리 동네의 식당이 문을 열고 있습니다',
-        '한 끼가 걱정인 이웃에게, 든든한 밥상을',
-        '당신이 나눈 한 끼가, 누군가의 하루가 됩니다',
+        '회사 안에만 있던 구내식당이, 이제 동네의 식탁이 됩니다',
+        '문 닫힌 식당이 아니라, 문 열린 식당입니다',
+        '비싼 점심이 아니어도, 영양은 빠지지 않습니다',
+        count ? `오늘, 우리 동네 ${count}곳의 구내식당이 문을 열고 있습니다` : '오늘, 우리 동네의 구내식당이 문을 열고 있습니다',
+        '점심값이 부담스러운 날, 가장 가까운 구내식당으로 오세요',
+        '어르신의 한 끼도, 수험생의 한 끼도 똑같이 든든하게',
+        '당신이 나눈 한 끼는, 누군가의 하루를 버티는 힘이 됩니다',
       ];
     };
     attractEl = document.createElement('div');
@@ -388,7 +389,7 @@
       <div class="da-touch">화면을 터치해 주세요</div>`;
     document.body.appendChild(attractEl);
     const line = attractEl.querySelector('#daLine');
-    let i = 0; // 늘 같은 문구로 시작
+    let i = 0; // 늘 첫 문구로 시작
     const next = () => {
       line.classList.remove('on');
       setTimeout(() => {
