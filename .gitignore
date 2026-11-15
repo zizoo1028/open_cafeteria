@@ -1,0 +1,5 @@
+# 비밀 키 파일은 GitHub에 올라가면 안 됩니다 (예: 네이버 검색 API 키)
+.env
+.env.*
+!.env.example
+*.secret
