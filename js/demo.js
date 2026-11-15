@@ -368,6 +368,7 @@
     OC.restaurants().forEach((r) => {
       const g = rng(hash(`fill|${r.id}`));
       if (!r.price) r.price = 5000 + Math.floor(g() * 7) * 500; // 5,000~8,000원
+      r.ticketOnSale = true; // 체험 모드에서는 모든 식당에서 '식권 사기'를 바로 해 볼 수 있게 (서버 설정은 그대로)
       if (!r.hours.lunch && !r.hours.dinner) {
         const start = g() < 0.5 ? '11:00' : '11:30';
         const end = g() < 0.5 ? '13:30' : '14:00';
