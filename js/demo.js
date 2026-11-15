@@ -481,7 +481,7 @@
     attractEl.setAttribute('role', 'button');
     attractEl.setAttribute('aria-label', '화면을 터치하면 시작합니다');
     attractEl.innerHTML = `
-      <div class="da-line">회사 안에만 있던 구내식당이,<br>이제 모두의 열린식당이 됩니다</div>
+      <div class="da-line">회사 안에만 있던 구내식당이,<br>이제 모두의 열린식당이 됩니다.</div>
       <div class="da-rule"></div>
       <div class="da-title">우리동네 열린식당</div>
       <div class="da-touch">지금 화면을 터치해주세요</div>`;
