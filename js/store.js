@@ -569,6 +569,7 @@ window.OC = (function () {
   })();
 
   return {
+    _cache: cache, // 체험 모드(js/demo.js)가 가짜 로그인 상태·예시 식단을 넣는 데 사용
     sb, unwrap, KEY, MEAL, WD, TYPE, ready, load, save, mapPlace, openReport,
     ymd, parseYmd, addDays, today, daysFromToday, fmtDate, won, esc, qs,
     restaurants, restaurant, priceTier, subtitle, opensOn, mealsOn, bookableMeals, status, statusBadge, hoursText, nextOpenDate,
