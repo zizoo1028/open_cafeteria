@@ -1,4 +1,4 @@
-/* 내 이용권: QR 표시, 사용 처리 */
+/* 내 식권: QR 표시, 사용 처리 */
 (function () {
   const esc = OC.esc;
   const newId = OC.qs('new');
@@ -112,7 +112,7 @@
         listEl.innerHTML = `
           <div class="card p-10 text-center">
             <p class="text-4xl">🎫</p>
-            <p class="mt-3 font-bold">로그인하면 내 이용권을 볼 수 있어요</p>
+            <p class="mt-3 font-bold">로그인하면 내 식권을 볼 수 있어요</p>
             <button id="loginBtn" class="btn mt-5 bg-[#FEE500] text-[#191919]">카카오로 시작하기</button>
           </div>`;
         document.getElementById('loginBtn').addEventListener('click', OC.signIn);

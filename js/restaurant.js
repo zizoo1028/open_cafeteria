@@ -82,7 +82,7 @@
             <ol class="mt-3 space-y-2 text-stone-700">
               <li>1. ${r.ticketOnSale ? '열린식당에서 이용권을 미리 사요.' : '현장에서 결제해요. (이용권 판매 준비 중)'}</li>
               <li>2. ${r.publicNote ? `입장 조건(${esc(r.publicNote)})을 확인하고 방문해요.` : '운영 시간에 맞춰 방문해요.'}</li>
-              <li>3. ${r.ticketOnSale ? '입구에서 내 이용권 QR을 보여주면 끝!' : '맛있게 드세요.'}</li>
+              <li>3. ${r.ticketOnSale ? '입구에서 내 식권 QR을 보여주면 끝!' : '맛있게 드세요.'}</li>
             </ol>
           </section>
         </div>

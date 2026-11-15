@@ -4,7 +4,7 @@
     ['map.html', '지도 검색'],
     ['feed.html', '후기'],
     ['share.html', '나눔 식권'],
-    ['tickets.html', '내 이용권'],
+    ['tickets.html', '내 식권'],
     ['partner.html', '파트너'],
     ['b2g.html', '공공 협력'],
   ];
