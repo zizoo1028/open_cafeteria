@@ -2,7 +2,7 @@
 (function () {
   const esc = OC.esc;
   const desktop = window.matchMedia('(min-width: 768px)');
-  const state = { q: '', type: 'all', tier: 'all', openNow: false, ticket: false, share: false, selected: null, me: null, sheet: null };
+  const state = { q: '', type: 'all', tier: 'all', openNow: false, ticket: false, share: false, selected: null, me: null, anchor: null, sheet: null };
 
   const panel = document.getElementById('panel');
   const sheet = document.getElementById('sheet');
@@ -85,7 +85,7 @@
   const scores = new Map(); // 현재 검색어의 점수 (정렬용)
   function matches(r) {
     const q = state.q.trim();
-    if (q) {
+    if (q && !state.anchor) { // 주소·장소로 검색 중이면(anchor) 글자 일치 대신 거리로 보여 줌
       const s = OCSearch.score(q, searchDoc(r));
       if (!s) return false;
       scores.set(r.id, s);
@@ -97,18 +97,19 @@
     if (state.share && OC.shareRemaining(r.id) <= 0) return false;
     return true;
   }
-  const dist = (r) => OC.distance(state.me, r);
+  const origin = () => state.anchor || state.me; // 거리 기준: 검색한 주소 > 내 위치(체험 모드는 전시장)
+  const dist = (r) => OC.distance(origin(), r);
   function visible() {
     scores.clear();
     const list = OC.restaurants().filter(matches);
-    if (state.q.trim()) {
+    if (state.q.trim() && !state.anchor) {
       // 모든 단어가 맞는 식당이 있으면 일부만 맞은 후보(점수 30 이하)는 숨김
       const best = Math.max(0, ...list.map((r) => scores.get(r.id)));
       const strict = best > 30 ? list.filter((r) => scores.get(r.id) > 30) : list;
       // 검색 중에는 잘 맞는 순, 점수가 같으면 가까운 순
       return strict.sort((a, b) => scores.get(b.id) - scores.get(a.id) || (state.me ? dist(a) - dist(b) : 0));
     }
-    return state.me ? list.sort((a, b) => dist(a) - dist(b)) : list;
+    return origin() ? list.sort((a, b) => dist(a) - dist(b)) : list;
   }
 
   function refresh() {
@@ -142,7 +143,7 @@
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <p class="font-extrabold text-lg truncate">${esc(r.name)}</p>
-            <p class="text-sm text-stone-500 truncate">${esc(OC.subtitle(r))}${state.me ? ` · ${OC.fmtDist(dist(r))}` : ''}</p>
+            <p class="text-sm text-stone-500 truncate">${esc(OC.subtitle(r))}${origin() ? ` · ${OC.fmtDist(dist(r))}` : ''}</p>
           </div>
           <p class="font-extrabold text-brand-600 shrink-0">${OC.won(r.price)}</p>
         </div>
@@ -160,7 +161,7 @@
       <div class="p-4 space-y-3">
         <div class="flex items-center justify-between">
           <h2 class="font-extrabold text-lg">주변 식당 ${list.length}곳</h2>
-          <span class="text-sm text-stone-500">${state.me ? '가까운 순' : '기본 순'}</span>
+          <span class="text-sm text-stone-500">${state.anchor ? `“${esc(state.anchor.label)}” 주변 · 가까운 순` : state.me ? '가까운 순' : '기본 순'}</span>
         </div>
         <button data-act="report-new" class="w-full text-left rounded-xl border border-dashed border-brand-300 bg-white px-4 py-3 text-sm font-semibold text-brand-700 hover:bg-brand-50">📮 여기 없는 식당을 알고 있나요? 제보하기</button>
         ${list.length ? list.map(listItemHtml).join('') : `<div class="card p-8 text-center text-stone-500">${OC.restaurants().length ? '조건에 맞는 식당이 없어요.<br>필터를 바꿔 보세요.' : '아직 등록된 식당이 없어요.'}</div>`}
@@ -384,18 +385,65 @@
 
   // 검색하면 정확도가 가장 높은 식당 위치로 지도를 옮김 (타자 칠 때마다 움직이지 않게 잠깐 기다림)
   let moveTimer = null;
-  function moveToBestMatch() {
-    if (!map || !state.q.trim()) return;
-    const best = visible()[0];
-    if (!best) return;
-    if (map.getLevel() > 5) map.setLevel(4); // 너무 멀리서 보고 있으면 가까이
-    map.panTo(latLng(best));
+  let anchorOverlay = null;
+  function clearAnchor() {
+    state.anchor = null;
+    if (anchorOverlay) anchorOverlay.setMap(null);
+  }
+  // 식당 이름이 아니라 주소·장소(예: "서울 서초구 강남대로 27", "강남역")를 친 경우:
+  // 카카오 주소 검색 → 장소 검색 순으로 위치를 찾아 그 주변 식당을 가까운 순으로 보여 줌
+  function findPlace(q) {
+    return new Promise((resolve) => {
+      const geo = new kakao.maps.services.Geocoder();
+      geo.addressSearch(q, (res, status) => {
+        if (status === kakao.maps.services.Status.OK && res[0]) {
+          return resolve({ lat: Number(res[0].y), lng: Number(res[0].x), label: res[0].road_address ? res[0].road_address.address_name : res[0].address_name });
+        }
+        new kakao.maps.services.Places().keywordSearch(q, (list, st) => {
+          if (st === kakao.maps.services.Status.OK && list[0]) resolve({ lat: Number(list[0].y), lng: Number(list[0].x), label: list[0].place_name });
+          else resolve(null);
+        });
+      });
+    });
+  }
+  async function searchByPlace(q) {
+    const found = await findPlace(q);
+    if (!found || state.q.trim() !== q || !map) return false; // 그 사이 검색어가 바뀌었으면 무시
+    state.anchor = found;
+    if (!anchorOverlay) {
+      const el = OC.overlayEl('<div class="pin" style="--pin:#2563eb;cursor:default;pointer-events:none"></div>');
+      anchorOverlay = new kakao.maps.CustomOverlay({ content: el, xAnchor: 0, yAnchor: 0, zIndex: 20 });
+      anchorOverlay._el = el;
+    }
+    anchorOverlay._el.firstChild.textContent = '📍 ' + found.label;
+    anchorOverlay.setPosition(latLng(found));
+    anchorOverlay.setMap(map);
+    refresh();
+    map.setLevel(4);
+    map.panTo(latLng(found));
+    return true;
+  }
+  async function moveToBestMatch() {
+    const q = state.q.trim();
+    if (!map || !q) return;
+    const list = visible();
+    const best = list[0];
+    // 식당이 모든 검색어와 맞으면 그 식당으로 이동, 아니면 주소·장소로 찾아봄
+    if (best && scores.get(best.id) > 30) {
+      if (map.getLevel() > 5) map.setLevel(4); // 너무 멀리서 보고 있으면 가까이
+      map.panTo(latLng(best));
+      return;
+    }
+    if (await searchByPlace(q)) return;
+    if (best) map.panTo(latLng(best)); // 주소도 못 찾으면 가장 비슷한 식당으로
   }
   document.getElementById('search').addEventListener('input', (e) => {
     state.q = e.target.value;
+    clearAnchor();
     refresh();
     clearTimeout(moveTimer);
-    moveTimer = setTimeout(moveToBestMatch, 350);
+    if (!state.q.trim()) return;
+    moveTimer = setTimeout(moveToBestMatch, 450);
   });
   document.getElementById('chips').addEventListener('click', (e) => {
     const chip = e.target.closest('.chip');
