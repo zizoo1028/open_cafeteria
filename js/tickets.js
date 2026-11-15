@@ -22,6 +22,15 @@
   }
 
   function render() {
+    // 탭 이름에 장 수를 붙임 (위쪽 '내 식권' 배지와 같은 기준: 수량 합계)
+    const sum = (f) => tickets.filter(f).reduce((n, t) => n + (t.qty || 1), 0);
+    const act = sum((t) => OC.ticketState(t) === 'active');
+    const past = sum((t) => OC.ticketState(t) !== 'active');
+    const label = (name, n) => (n ? `${name} ${n}장` : name);
+    const ta = document.querySelector('[data-tab="active"]');
+    const tp = document.querySelector('[data-tab="past"]');
+    if (ta) ta.textContent = label('사용 가능', act);
+    if (tp) tp.textContent = label('사용 완료·만료', past);
     const list = tickets
       .filter((t) => (tab === 'active' ? OC.ticketState(t) === 'active' : OC.ticketState(t) !== 'active'))
       .sort((a, b) => (tab === 'active' ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)));
@@ -82,6 +91,7 @@
   async function reload() {
     tickets = await OC.fetchMyTickets();
     render();
+    if (OC.refreshTicketBadge) OC.refreshTicketBadge(); // 위쪽 메뉴의 숫자도 바로 맞춤
   }
 
   listEl.addEventListener('click', async (e) => {

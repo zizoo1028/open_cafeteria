@@ -54,6 +54,20 @@
       menuBtn.setAttribute('aria-expanded', open);
     });
 
+    // 내 식권 배지: 지금 쓸 수 있는 식권의 장 수(수량 합계). 내 식권 화면의 '사용 가능 N장'과 같은 숫자.
+    // 구매·사용 등으로 바뀌면 OC.refreshTicketBadge()를 불러 바로 갱신함
+    OC.refreshTicketBadge = async function () {
+      let n = 0;
+      try {
+        n = (await OC.fetchMyTickets()).filter((t) => OC.ticketState(t) === 'active').reduce((s, t) => s + (t.qty || 1), 0);
+      } catch (e) {}
+      document.querySelectorAll('[data-ticket-badge]').forEach((b) => {
+        b.textContent = n;
+        b.classList.toggle('hidden', !n);
+        b.classList.toggle('inline-grid', !!n);
+      });
+    };
+
     // 로그인 상태가 확인되면 버튼·식권 개수 표시
     OC.ready
       .then(async () => {
@@ -70,14 +84,7 @@
             document.getElementById('mobileNav').insertAdjacentHTML('beforeend',
               '<a href="admin.html" class="flex items-center px-4 py-3 rounded-xl font-semibold text-blue-700 hover:bg-blue-50">⚙️ 관리자</a>');
           }
-          const active = (await OC.fetchMyTickets()).filter((t) => OC.ticketState(t) === 'active').length;
-          if (active) {
-            document.querySelectorAll('[data-ticket-badge]').forEach((b) => {
-              b.textContent = active;
-              b.classList.remove('hidden');
-              b.classList.add('inline-grid');
-            });
-          }
+          OC.refreshTicketBadge();
         } else {
           area.innerHTML = '<button id="signInBtn" class="btn-ghost text-sm font-bold text-brand-700">로그인</button>';
           document.getElementById('signInBtn').addEventListener('click', () => OC.requireLogin('후기 작성, 식권 구매, 나눔은 로그인 후 이용할 수 있어요.'));
