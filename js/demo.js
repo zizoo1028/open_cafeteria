@@ -33,6 +33,8 @@
   if (!on || !window.OC) return;
 
   window.OC_DEMO = true;
+  // 전시장 위치: 체험 모드의 지도 검색은 이 주소를 중심으로 열리고, 목록은 여기서 가까운 순으로 정렬됨
+  window.OC_DEMO_VENUE = { name: '전시장', address: '서울특별시 서초구 강남대로 27' };
   document.documentElement.classList.add('demo-mode');
   // 태블릿에서 보기 편하도록 처음에는 큰 글씨로 (사용자가 끄면 존중)
   try {

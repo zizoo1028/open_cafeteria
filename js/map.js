@@ -342,6 +342,7 @@
   }
 
   function locate() {
+    if (window.OC_DEMO_VENUE) return goToVenue(true); // 체험 모드: ◎ 버튼은 전시장으로 돌아옴
     if (!navigator.geolocation || !window.isSecureContext) return locationHelp(0);
     const btn = document.getElementById('locateBtn');
     btn.classList.add('animate-pulse');
@@ -448,6 +449,37 @@
       map.setCenter(latLng(OC.restaurant(initial)));
       select(initial);
     }
+    if (window.OC_DEMO_VENUE) goToVenue(!initial);
+  }
+
+  /* ---------- 체험 모드: 전시장 기준 ---------- */
+  // 전시장 주소를 좌표로 바꿔 한 번만 기억해 둠 (카카오 주소 검색)
+  let venue = null;
+  function findVenue() {
+    if (venue) return Promise.resolve(venue);
+    return new Promise((resolve) => {
+      new kakao.maps.services.Geocoder().addressSearch(window.OC_DEMO_VENUE.address, (res, status) => {
+        if (status === kakao.maps.services.Status.OK && res[0]) venue = { lat: Number(res[0].y), lng: Number(res[0].x) };
+        resolve(venue);
+      });
+    });
+  }
+  let venueOverlay = null;
+  // center=true면 지도도 전시장 쪽으로 옮김. 목록은 전시장에서 가까운 순으로 정렬하고 거리를 표시
+  async function goToVenue(center = true) {
+    const v = await findVenue();
+    if (!v || !map) return;
+    state.me = v;
+    if (!venueOverlay) {
+      const el = OC.overlayEl(`<div class="pin" style="--pin:#2563eb;transform:translate(-50%,calc(-100% - 9px));cursor:default;font-size:13px;pointer-events:none">📍 ${OC.esc(window.OC_DEMO_VENUE.name)}</div>`);
+      venueOverlay = new kakao.maps.CustomOverlay({ position: latLng(v), content: el, xAnchor: 0, yAnchor: 0, zIndex: 20 });
+      venueOverlay.setMap(map);
+    }
+    if (center) {
+      map.setLevel(4);
+      map.panTo(latLng(v));
+    }
+    refresh();
   }
   OC.ready
     .then(() => {
