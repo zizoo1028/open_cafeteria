@@ -85,29 +85,51 @@
   // n 이름, k 열량(kcal), c 탄수화물, p 단백질, f 지방(g)
   const D = {
     rice: [
-      { n: '잡곡밥', k: 310, c: 68, p: 7, f: 1 }, { n: '흰쌀밥', k: 300, c: 67, p: 5, f: 1 }, { n: '현미밥', k: 305, c: 66, p: 6, f: 2 }, { n: '보리밥', k: 295, c: 65, p: 6, f: 1 },
+      { n: '잡곡밥', k: 310, c: 68, p: 7, f: 1 }, { n: '흰쌀밥', k: 300, c: 67, p: 5, f: 1 }, { n: '현미밥', k: 305, c: 66, p: 6, f: 2 },
+      { n: '보리밥', k: 295, c: 65, p: 6, f: 1 }, { n: '흑미밥', k: 308, c: 67, p: 6, f: 2 },
     ],
+    // 국·찌개 (한 끼에 하나만)
     soup: [
-      { n: '소고기미역국', k: 80, c: 5, p: 7, f: 4 }, { n: '된장찌개', k: 70, c: 6, p: 5, f: 3 }, { n: '콩나물국', k: 40, c: 4, p: 4, f: 1 }, { n: '북어국', k: 60, c: 3, p: 9, f: 2 },
-      { n: '김치콩나물국', k: 45, c: 5, p: 4, f: 1 }, { n: '어묵국', k: 65, c: 7, p: 5, f: 2 },
+      { n: '소고기미역국', k: 80, c: 5, p: 7, f: 4 }, { n: '된장찌개', k: 70, c: 6, p: 5, f: 3 }, { n: '콩나물국', k: 40, c: 4, p: 4, f: 1 },
+      { n: '북어국', k: 60, c: 3, p: 9, f: 2 }, { n: '김치콩나물국', k: 45, c: 5, p: 4, f: 1 }, { n: '어묵국', k: 65, c: 7, p: 5, f: 2 },
+      { n: '순두부찌개', k: 130, c: 7, p: 11, f: 7 }, { n: '시금치된장국', k: 50, c: 5, p: 4, f: 2 }, { n: '떡국', k: 150, c: 26, p: 6, f: 3 },
+      { n: '육개장', k: 160, c: 8, p: 14, f: 8 }, { n: '매운어묵탕', k: 90, c: 9, p: 7, f: 3 },
     ],
     main: [
-      { n: '제육볶음', k: 260, c: 14, p: 20, f: 14 }, { n: '닭갈비', k: 240, c: 13, p: 22, f: 11 }, { n: '고등어구이', k: 220, c: 2, p: 24, f: 13 }, { n: '불고기', k: 250, c: 15, p: 21, f: 12 },
-      { n: '함박스테이크', k: 280, c: 16, p: 19, f: 16 }, { n: '돈가스', k: 330, c: 24, p: 18, f: 18 }, { n: '오징어볶음', k: 190, c: 14, p: 18, f: 6 }, { n: '순두부찌개', k: 160, c: 8, p: 12, f: 9 },
+      { n: '제육볶음', k: 260, c: 14, p: 20, f: 14 }, { n: '닭갈비', k: 240, c: 13, p: 22, f: 11 }, { n: '고등어구이', k: 220, c: 2, p: 24, f: 13 },
+      { n: '불고기', k: 250, c: 15, p: 21, f: 12 }, { n: '함박스테이크', k: 280, c: 16, p: 19, f: 16 }, { n: '돈가스', k: 330, c: 24, p: 18, f: 18 },
+      { n: '오징어볶음', k: 190, c: 14, p: 18, f: 6 }, { n: '닭강정', k: 300, c: 26, p: 17, f: 14 }, { n: '삼치구이', k: 210, c: 2, p: 22, f: 12 },
+      { n: '두루치기', k: 240, c: 16, p: 18, f: 11 }, { n: '떡갈비', k: 270, c: 15, p: 18, f: 15 }, { n: 'LA갈비', k: 310, c: 12, p: 22, f: 18 },
+      { n: '찜닭', k: 260, c: 20, p: 20, f: 10 }, { n: '생선까스', k: 290, c: 22, p: 16, f: 15 },
     ],
     side: [
-      { n: '계란말이', k: 120, c: 3, p: 8, f: 8 }, { n: '시금치나물', k: 35, c: 4, p: 3, f: 1 }, { n: '어묵볶음', k: 90, c: 10, p: 6, f: 3 }, { n: '감자조림', k: 100, c: 18, p: 2, f: 3 },
-      { n: '콩나물무침', k: 40, c: 4, p: 4, f: 1 }, { n: '두부조림', k: 110, c: 5, p: 9, f: 6 }, { n: '멸치볶음', k: 85, c: 8, p: 9, f: 2 }, { n: '도라지무침', k: 55, c: 8, p: 2, f: 2 },
+      { n: '계란말이', k: 120, c: 3, p: 8, f: 8 }, { n: '시금치나물', k: 35, c: 4, p: 3, f: 1 }, { n: '어묵볶음', k: 90, c: 10, p: 6, f: 3 },
+      { n: '감자조림', k: 100, c: 18, p: 2, f: 3 }, { n: '콩나물무침', k: 40, c: 4, p: 4, f: 1 }, { n: '두부조림', k: 110, c: 5, p: 9, f: 6 },
+      { n: '멸치볶음', k: 85, c: 8, p: 9, f: 2 }, { n: '도라지무침', k: 55, c: 8, p: 2, f: 2 }, { n: '깻잎무침', k: 45, c: 6, p: 2, f: 2 },
+      { n: '숙주나물', k: 35, c: 4, p: 3, f: 1 }, { n: '고구마맛탕', k: 140, c: 28, p: 1, f: 4 }, { n: '잡채', k: 150, c: 24, p: 4, f: 5 },
+      { n: '파래무침', k: 30, c: 4, p: 2, f: 1 }, { n: '애호박볶음', k: 60, c: 6, p: 2, f: 3 },
     ],
-    kimchi: [{ n: '배추김치', k: 20, c: 3, p: 1, f: 0 }, { n: '깍두기', k: 25, c: 5, p: 1, f: 0 }],
+    kimchi: [{ n: '배추김치', k: 20, c: 3, p: 1, f: 0 }, { n: '깍두기', k: 25, c: 5, p: 1, f: 0 }, { n: '열무김치', k: 18, c: 3, p: 1, f: 0 }],
+    // 후식·샐러드
+    extra: [
+      { n: '과일샐러드', k: 70, c: 15, p: 1, f: 1 }, { n: '요구르트', k: 60, c: 11, p: 2, f: 1 }, { n: '양상추샐러드', k: 45, c: 6, p: 1, f: 2 },
+      { n: '방울토마토', k: 30, c: 6, p: 1, f: 0 }, { n: '식혜', k: 80, c: 19, p: 0, f: 0 }, { n: '귤', k: 40, c: 10, p: 1, f: 0 },
+    ],
   };
+  // 날짜가 바뀔 때마다 목록을 돌아가며 골라서 어제와 같은 메뉴가 나오지 않게 함 (식당마다 시작 위치가 다름)
+  const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+  const stepFor = (len) => [7, 5, 3, 11, 13, 1].find((x) => gcd(x, len) === 1);
   function genMenu(placeId, date, meal) {
-    const r = rng(hash(`${placeId}|${date}|${meal}`));
-    const pick = (list) => list[Math.floor(r() * list.length)];
-    const side1 = pick(D.side);
-    let side2 = pick(D.side);
-    if (side2 === side1) side2 = D.side[(D.side.indexOf(side1) + 3) % D.side.length];
-    return { restaurantId: placeId, date, meal, items: [pick(D.rice), pick(D.soup), pick(D.main), side1, side2, pick(D.kimchi)] };
+    const day = Math.floor(OC.parseYmd(date).getTime() / 86400000);
+    const r = OC.restaurant(placeId);
+    const isBuffet = r && r.type === 'buffet';
+    const base = (cat, k = 0) => hash(`${placeId}|${meal}|${cat}`) + k * 5;
+    const pick = (cat, k = 0) => D[cat][(base(cat, k) + day * stepFor(D[cat].length)) % D[cat].length];
+    // 밥·국·메인·반찬 2개·김치 = 6가지. 한식뷔페는 반찬 1개와 후식을 더하고, 일반 식당도 격일로 후식이 붙음 (항상 5가지 이상)
+    const items = [pick('rice'), pick('soup'), pick('main'), pick('side', 0), pick('side', 1), pick('kimchi')];
+    if (isBuffet) items.splice(5, 0, pick('side', 2));
+    if (isBuffet || (hash(`${placeId}|${date}`) & 1) === 0) items.push(pick('extra'));
+    return { restaurantId: placeId, date, meal, items };
   }
   function fillMenus(placeIds, from, to) {
     const ids = placeIds ? new Set(placeIds.map(Number)) : null;
@@ -151,6 +173,41 @@
     { place: 420, nickname: '수험생엄마', rating: 5, text: '가격이 저렴해서 놀랐어요. 아이랑 같이 먹었어요.', ago: 6 },
     { place: 328, nickname: '강남출근길', rating: 4, text: '식단표를 미리 볼 수 있어서 좋아요.', ago: 8 },
   ];
+  // 모든 식당에 후기가 있도록, 직접 쓴 예시 후기가 3건 미만인 식당은 자동으로 채움 (같은 식당이면 늘 같은 후기)
+  const NICKS = ['점심러', '맛집탐방러', '근처직장인', '동네주민', '퇴근길이웃', '공부하는중', '든든한한끼', '이웃주민', '점심메이트', '야근러', '뚜벅이', '주말산책', '수험생엄마', '어르신아드님', '자취생', '대학원생', '회사원', '단골손님', '첫방문', '지나가던행인', '출근길', '배고픈직장인', '밥심', '알뜰살뜰'];
+  const REVIEW_LINES = {
+    good: ['반찬이 깔끔하고 간이 적당해요.', '국이 따뜻하고 맛있었어요.', '밥이 질지 않고 딱 좋아요.', '양이 넉넉해서 든든하게 먹었어요.', '메뉴가 매일 달라서 질리지 않아요.', '김치가 맛있어서 밥 한 공기 더 먹었어요.', '식단표를 미리 확인하고 가니 편했어요.', '직원분들이 친절하세요.', '외부인도 눈치 안 보고 이용할 수 있어요.', '혼자 와서 먹기에도 부담 없어요.', '샐러드랑 후식도 있어서 좋았어요.', '자리가 넓어서 편하게 먹었어요.'],
+    ok: ['무난해요. 특별하진 않지만 한 끼 해결하기엔 충분해요.', '맛은 평범한데 가격을 생각하면 괜찮아요.', '점심시간엔 줄이 길어요. 조금 일찍 가는 걸 추천해요.', '자리가 조금 좁은 편이에요.'],
+    tip: ['점심시간엔 사람이 많으니 조금 일찍 가세요.', '12시 넘으면 대기가 있어요.', '식권을 미리 사 두면 편해요.'],
+  };
+  function genReview(r, k) {
+    const g = rng(hash(`rv|${r.id}|${k}`));
+    const pick = (list) => list[Math.floor(g() * list.length)];
+    const roll = g();
+    const rating = roll < 0.4 ? 5 : roll < 0.82 ? 4 : 3;
+    const place = [];
+    if (/도서관/.test(r.name)) place.push('책 보다가 먹기 좋아요.');
+    else if (/구청|세무서|우체국|보건소|지검|경찰서|조달청/.test(r.name)) place.push('공공기관인데 외부인도 편하게 이용할 수 있었어요.');
+    else if (/병원/.test(r.name)) place.push('병원 다녀오는 길에 먹기 편해요.');
+    else if (/대학|학생|캠퍼스/.test(r.name)) place.push('학생들 사이에서 먹는 분위기가 좋아요.');
+    else if (r.type === 'buffet') place.push('반찬 종류가 많아서 골라 먹는 재미가 있어요.');
+    const price = r.price ? [`${OC.won(r.price)}에 이 정도면 만족스러워요.`, `${OC.won(r.price)}이라 부담 없이 먹었어요.`] : [];
+    const first = rating === 3 ? pick(REVIEW_LINES.ok) : pick([...REVIEW_LINES.good, ...price, ...place]);
+    let second = '';
+    if (rating === 4 && g() < 0.6) second = pick(REVIEW_LINES.tip);
+    else if (rating === 5 && g() < 0.5) second = pick([...REVIEW_LINES.good, ...place]);
+    const text = second && second !== first ? `${first} ${second}` : first;
+    return { id: `gen-${r.id}-${k}`, restaurantId: r.id, nickname: pick(NICKS), rating, text, date: OC.daysFromToday(-Math.floor(g() * 28)), mine: false };
+  }
+  let GEN_REVIEWS = [];
+  function buildGenReviews() {
+    const seeded = new Map();
+    SEED_REVIEWS.forEach((v) => seeded.set(v.place, (seeded.get(v.place) || 0) + 1));
+    GEN_REVIEWS = [];
+    OC.restaurants().forEach((r) => {
+      for (let k = 0; k < Math.max(0, 3 - (seeded.get(r.id) || 0)); k += 1) GEN_REVIEWS.push(genReview(r, k));
+    });
+  }
   const mkReview = (v, i) => ({ id: `seed-${i}`, restaurantId: v.place, nickname: v.nickname, rating: v.rating, text: v.text, date: OC.daysFromToday(-v.ago), mine: false });
   const origFetchReviews = OC.fetchReviews;
   OC.fetchReviews = async ({ placeId, limit = 100 } = {}) => {
@@ -159,7 +216,7 @@
       real = await origFetchReviews({ placeId, limit });
     } catch (e) {}
     const mine = S.reviews.map((v) => ({ id: v.id, restaurantId: v.place, nickname: v.nickname, rating: v.rating, text: v.text, date: v.date, mine: true }));
-    const seeds = SEED_REVIEWS.map(mkReview);
+    const seeds = [...SEED_REVIEWS.map(mkReview), ...GEN_REVIEWS];
     const all = [...mine, ...real, ...seeds].filter((v) => !placeId || v.restaurantId === Number(placeId));
     return all.sort((a, b) => b.date.localeCompare(a.date)).slice(0, limit);
   };
@@ -331,6 +388,8 @@
       persist();
     }
     // 예시 후기·내가 쓴 후기를 별점 통계에 반영 (통계는 서버에서 불러온 뒤 만들어지므로 여기서)
+    buildGenReviews();
+    GEN_REVIEWS.forEach((v) => bumpRating(v.restaurantId, v.rating));
     SEED_REVIEWS.forEach((v) => bumpRating(v.place, v.rating));
     S.reviews.forEach((v) => bumpRating(v.place, v.rating));
     // 내가 이미 나눔한 식권 수도 반영
