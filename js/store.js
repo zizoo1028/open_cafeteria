@@ -197,7 +197,8 @@ window.OC = (function () {
   const menuPageUrl = (r) => r.menuUrl || naverMapUrl(r);
   // "식단표 보기" 큰 버튼 (모든 식당). 색은 연결되는 곳(네이버·카카오 등)에 맞춤
   function menuPageButton(r, cls = '') {
-    const url = menuPageUrl(r);
+    if (!r.menuUrl) return ''; // 식단표 링크가 없는 식당은 버튼을 보여 주지 않음
+    const url = r.menuUrl;
     return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="btn w-full ${menuSource(url).cls} ${cls}">식단표 보기 ↗</a>`;
   }
 
