@@ -346,7 +346,7 @@
         done += part.length;
         continue;
       }
-      // 묶음 삭제가 막히면(이용권 기록 등) 하나씩 다시 시도해 막힌 것만 남김
+      // 묶음 삭제가 막히면(식권 기록 등) 하나씩 다시 시도해 막힌 것만 남김
       for (const id of part) {
         const res = await sb.from('places').delete().eq('id', id);
         if (res.error) failed.push(id);
@@ -356,7 +356,7 @@
     await loadPlaces();
     state.selected.clear();
     render();
-    OC.toast(`${done}개 삭제했어요${failed.length ? ` · ${failed.length}개는 이용권 기록이 있어 삭제하지 못했어요(숨김 처리 권장)` : ''}`);
+    OC.toast(`${done}개 삭제했어요${failed.length ? ` · ${failed.length}개는 식권 기록이 있어 삭제하지 못했어요(숨김 처리 권장)` : ''}`);
   }
 
   async function setStatus(id, status) {
@@ -428,7 +428,7 @@
         </div>
         <div class="flex flex-wrap gap-2">
           <label class="option"><input type="checkbox" name="saturday" ${p.saturday ? 'checked' : ''}> 토요일 중식 운영</label>
-          <label class="option"><input type="checkbox" name="ticket_on_sale" ${p.ticket_on_sale ? 'checked' : ''}> 이용권 판매</label>
+          <label class="option"><input type="checkbox" name="ticket_on_sale" ${p.ticket_on_sale ? 'checked' : ''}> 식권 판매</label>
         </div>
         ${field('외부인 입장 조건', input('public_note', p.public_note, 'placeholder="예: 외부인 12:10 이후 입장"'))}
         <div>
@@ -615,7 +615,7 @@
           render();
           OC.toast('삭제했어요');
         } catch (ex) {
-          fail(/foreign key|violates/.test(ex.message) ? '이용권 기록이 있어 삭제할 수 없어요. 상태를 "숨김"으로 바꿔 주세요.' : '삭제하지 못했어요: ' + ex.message);
+          fail(/foreign key|violates/.test(ex.message) ? '식권 기록이 있어 삭제할 수 없어요. 상태를 "숨김"으로 바꿔 주세요.' : '삭제하지 못했어요: ' + ex.message);
         }
       }
     });

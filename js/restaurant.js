@@ -25,7 +25,7 @@
       <div id="content" class="max-w-6xl mx-auto px-4 py-8"></div>
       <div class="md:hidden fixed bottom-0 inset-x-0 z-[1000] bg-white border-t border-orange-100 p-3 flex gap-2">
         ${r.ticketOnSale
-          ? `<a href="checkout.html?id=${r.id}" class="btn btn-primary flex-1">🎫 이용권 사기 · ${OC.won(r.price)}</a>`
+          ? `<a href="checkout.html?id=${r.id}" class="btn btn-primary flex-1">🎫 식권 사기 · ${OC.won(r.price)}</a>`
           : `<a href="share.html?tab=give&id=${r.id}" class="btn btn-green flex-1">🤝 나눔 식권 기부하기</a>`}
       </div>`;
     content = document.getElementById('content');
@@ -41,7 +41,7 @@
           <div class="flex flex-wrap gap-1.5">
             <span class="badge ${r.type === 'buffet' ? 'badge-purple' : 'badge-blue'}">${OC.TYPE[r.type]}</span>
             ${OC.statusBadge(r)}
-            ${r.ticketOnSale ? '<span class="badge badge-brand">🎫 이용권 판매 중</span>' : ''}
+            ${r.ticketOnSale ? '<span class="badge badge-brand">🎫 식권 판매 중</span>' : ''}
             ${share > 0 ? `<span class="badge badge-green">🤝 나눔 식권 ${share}장</span>` : ''}
             ${r.tags.map((t) => `<span class="badge">#${esc(t)}</span>`).join('')}
           </div>
@@ -51,7 +51,7 @@
         </div>
         <div class="hidden md:flex items-center gap-3">
           <p class="text-right"><span class="text-sm text-stone-500 block">1식 가격</span><span class="text-2xl font-extrabold text-brand-600">${r.price ? OC.won(r.price) : '미등록'}</span></p>
-          ${r.ticketOnSale ? `<a href="checkout.html?id=${r.id}" class="btn btn-primary px-6">🎫 이용권 사기</a>` : '<span class="btn btn-disabled">이용권 준비 중</span>'}
+          ${r.ticketOnSale ? `<a href="checkout.html?id=${r.id}" class="btn btn-primary px-6">🎫 식권 사기</a>` : '<span class="btn btn-disabled">식권 준비 중</span>'}
         </div>
       </div>`;
   }
@@ -80,7 +80,7 @@
           <section class="card p-6">
             <h2 class="text-xl font-extrabold">이용 방법</h2>
             <ol class="mt-3 space-y-2 text-stone-700">
-              <li>1. ${r.ticketOnSale ? '열린식당에서 이용권을 미리 사요.' : '현장에서 결제해요. (이용권 판매 준비 중)'}</li>
+              <li>1. ${r.ticketOnSale ? '열린식당에서 식권을 미리 사요.' : '현장에서 결제해요. (식권 판매 준비 중)'}</li>
               <li>2. ${r.publicNote ? `입장 조건(${esc(r.publicNote)})을 확인하고 방문해요.` : '운영 시간에 맞춰 방문해요.'}</li>
               <li>3. ${r.ticketOnSale ? '입구에서 내 식권 QR을 보여주면 끝!' : '맛있게 드세요.'}</li>
             </ol>

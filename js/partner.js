@@ -23,7 +23,7 @@
   }
 
   /* ---------- 예측 ---------- */
-  // 요일이 같은 최근 4주 실적 평균 + 확정된 이용권
+  // 요일이 같은 최근 4주 실적 평균 + 확정된 식권
   function forecast(date, history, presold) {
     const w = OC.parseYmd(date).getDay();
     const same = history.filter((h) => OC.parseYmd(h.date).getDay() === w).slice(-4);
@@ -45,9 +45,9 @@
     document.getElementById('kpis').innerHTML =
       kpi(`${fc ? OC.fmtDate(fc.date) : '다음 운영일'} 예상 식수`, fc ? `${fc.total}식` : '-',
         fc && fc.hasHistory ? `권장 준비량 <b>${fc.prepare}인분</b> (+3%)` : '실적을 입력하면 예측해요', true) +
-      kpi('이용권 확정', fc ? `${fc.presold}식` : '-', r.ticketOnSale ? '외부인 사전판매' : '이용권 미판매 식당', false) +
+      kpi('식권 확정', fc ? `${fc.presold}식` : '-', r.ticketOnSale ? '외부인 사전판매' : '식권 미판매 식당', false) +
       kpi('최근 평균 잔반', waste == null ? '-' : `${waste.toFixed(1)}kg`, waste == null ? '잔반을 입력하면 표시돼요' : `최근 ${recent.length}일 기준`, false) +
-      kpi('이번 달 이용권 판매', `${monthSales.qty}식`, `매출 ${OC.won(monthSales.qty * r.price)}`, false);
+      kpi('이번 달 식권 판매', `${monthSales.qty}식`, `매출 ${OC.won(monthSales.qty * r.price)}`, false);
   }
 
   /* ---------- 차트 ---------- */
@@ -70,7 +70,7 @@
         datasets: [
           { label: '임직원 (예상)', data: fcs.map((f) => f.internal), backgroundColor: COLORS.internal, borderRadius: 4 },
           { label: '외부 현장 (예상)', data: fcs.map((f) => f.walkin), backgroundColor: COLORS.walkin, borderRadius: 4 },
-          { label: '이용권 (확정)', data: fcs.map((f) => f.presold), backgroundColor: COLORS.presold, borderRadius: 4 },
+          { label: '식권 (확정)', data: fcs.map((f) => f.presold), backgroundColor: COLORS.presold, borderRadius: 4 },
         ],
       },
       options: baseOptions,
@@ -95,8 +95,8 @@
   function renderPresale(days, presales) {
     const el = document.getElementById('presaleTable');
     if (!r.ticketOnSale) {
-      el.innerHTML = `<div class="rounded-2xl bg-stone-50 p-6 text-center"><p class="font-bold">이용권 판매가 꺼져 있어요</p>
-        <p class="mt-1 text-sm text-stone-500">이용권을 열면 외부인 식수를 하루 전에 확정할 수 있어요. 판매 시작은 관리자에게 요청해 주세요.</p></div>`;
+      el.innerHTML = `<div class="rounded-2xl bg-stone-50 p-6 text-center"><p class="font-bold">식권 판매가 꺼져 있어요</p>
+        <p class="mt-1 text-sm text-stone-500">식권을 열면 외부인 식수를 하루 전에 확정할 수 있어요. 판매 시작은 관리자에게 요청해 주세요.</p></div>`;
       return;
     }
     const qty = (d, meal) => (presales.find((p) => p.date === d && p.meal === meal) || {}).qty || 0;

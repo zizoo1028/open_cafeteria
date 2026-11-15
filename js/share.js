@@ -109,7 +109,7 @@
         <aside class="card p-6 bg-stone-50 space-y-3 text-stone-700">
           <h2 class="font-extrabold text-lg text-ink">안내</h2>
           <p>• 하루 1장, 가장 가까운 운영일 중식에 쓸 수 있어요.</p>
-          <p>• 받은 식권은 <a href="tickets.html" class="underline font-semibold">내 식권</a> 목록에 QR로 들어가요. 일반 이용권과 똑같이 생겨서 누구도 알아볼 수 없어요.</p>
+          <p>• 받은 식권은 <a href="tickets.html" class="underline font-semibold">내 식권</a> 목록에 QR로 들어가요. 일반 식권과 똑같이 생겨서 누구도 알아볼 수 없어요.</p>
           <p class="text-sm text-stone-500">※ 실제 서비스에서는 주민센터·학교·복지관 등 연계 기관 확인 후 지급돼요. 프로토타입에서는 바로 발급됩니다.</p>
         </aside>
       </div>`;

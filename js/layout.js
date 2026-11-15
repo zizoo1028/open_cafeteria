@@ -54,7 +54,7 @@
       menuBtn.setAttribute('aria-expanded', open);
     });
 
-    // 로그인 상태가 확인되면 버튼·이용권 개수 표시
+    // 로그인 상태가 확인되면 버튼·식권 개수 표시
     OC.ready
       .then(async () => {
         const area = document.getElementById('authArea');
@@ -80,7 +80,7 @@
           }
         } else {
           area.innerHTML = '<button id="signInBtn" class="btn-ghost text-sm font-bold text-brand-700">로그인</button>';
-          document.getElementById('signInBtn').addEventListener('click', () => OC.requireLogin('후기 작성, 이용권 구매, 나눔은 로그인 후 이용할 수 있어요.'));
+          document.getElementById('signInBtn').addEventListener('click', () => OC.requireLogin('후기 작성, 식권 구매, 나눔은 로그인 후 이용할 수 있어요.'));
         }
       })
       .catch(() => {});

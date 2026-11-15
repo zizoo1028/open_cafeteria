@@ -1,4 +1,4 @@
-/* 이용권 구매 (결제는 시연용, 이용권 발급은 Supabase buy_ticket RPC) */
+/* 식권 구매 (결제는 시연용, 식권 발급은 Supabase buy_ticket RPC) */
 (function () {
   const esc = OC.esc;
   const app = document.getElementById('app');
@@ -11,14 +11,14 @@
   function renderPicker() {
     const list = OC.restaurants().filter((x) => x.ticketOnSale);
     app.innerHTML = `
-      ${r ? `<div class="card p-5 mb-6 bg-stone-50">ℹ️ <b>${esc(r.name)}</b>은(는) 아직 이용권을 판매하지 않아요. 현장 결제로 이용해 주세요.</div>` : ''}
-      <h1 class="text-3xl font-extrabold">🎫 이용권을 살 식당을 골라 주세요</h1>
+      ${r ? `<div class="card p-5 mb-6 bg-stone-50">ℹ️ <b>${esc(r.name)}</b>은(는) 아직 식권을 판매하지 않아요. 현장 결제로 이용해 주세요.</div>` : ''}
+      <h1 class="text-3xl font-extrabold">🎫 식권을 살 식당을 골라 주세요</h1>
       <div class="mt-6 grid sm:grid-cols-2 gap-3">
         ${list.length ? list.map((x) => `
           <a href="checkout.html?id=${x.id}" class="card p-5 flex justify-between items-center hover:border-brand-300">
             <span><b class="text-lg">${esc(x.name)}</b><br><span class="text-sm text-stone-500">${esc(OC.subtitle(x))}</span></span>
             <b class="text-brand-600">${OC.won(x.price)}</b>
-          </a>`).join('') : '<div class="card p-8 text-center text-stone-500 sm:col-span-2">아직 이용권을 판매하는 식당이 없어요.</div>'}
+          </a>`).join('') : '<div class="card p-8 text-center text-stone-500 sm:col-span-2">아직 식권을 판매하는 식당이 없어요.</div>'}
       </div>`;
   }
 
@@ -32,7 +32,7 @@
 
     app.innerHTML = `
       <a href="restaurant.html?id=${r.id}" class="link-btn -ml-2">← ${esc(r.name)}</a>
-      <h1 class="mt-2 text-3xl font-extrabold">이용권 구매</h1>
+      <h1 class="mt-2 text-3xl font-extrabold">식권 구매</h1>
       <p class="mt-1 text-stone-500">미리 사두면 현장 결제 없이 QR만 보여주고 입장해요.</p>
 
       <div class="mt-8 grid md:grid-cols-[1fr_340px] gap-6 items-start">
@@ -108,7 +108,7 @@
   });
 
   function pay() {
-    if (!OC.requireLogin('이용권은 로그인 후 살 수 있어요.')) return;
+    if (!OC.requireLogin('식권은 로그인 후 살 수 있어요.')) return;
     OC.fakePay(() => OC.buyTicket({ restaurantId: r.id, date: state.date, meal: state.meal, qty: state.qty, payMethod: state.pay }))
       .then((ticket) => {
         location.href = `tickets.html?new=${ticket.id}`;

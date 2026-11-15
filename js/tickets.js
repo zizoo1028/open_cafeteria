@@ -8,7 +8,7 @@
 
   const SOURCE = { buy: ['구매', 'badge-brand'], share: ['나눔 식권', 'badge-green'] };
   const STATE = { active: ['사용 가능', 'badge-open'], used: ['사용 완료', ''], expired: ['기간 만료', ''], refunded: ['환불됨', ''] };
-  // 이용권의 식당이 숨김 처리돼 목록에 없을 수도 있음
+  // 식권의 식당이 숨김 처리돼 목록에 없을 수도 있음
   const placeOf = (t) => OC.restaurant(t.restaurantId) || { id: t.restaurantId, name: '(운영 중단된 식당)', building: '', hours: {} };
 
   function renderBanner() {
@@ -16,7 +16,7 @@
     if (!t) return;
     document.getElementById('banner').innerHTML = `
       <div class="mt-6 card p-5 bg-green-50 border-green-200">
-        <p class="font-extrabold text-lg">🎉 ${t.source === 'share' ? '나눔 식권을 받았어요!' : '이용권이 발급됐어요!'}</p>
+        <p class="font-extrabold text-lg">🎉 ${t.source === 'share' ? '나눔 식권을 받았어요!' : '식권이 발급됐어요!'}</p>
         <p class="mt-1 text-stone-700">${esc(placeOf(t).name)} · ${OC.fmtDate(t.date)} ${OC.MEAL[t.meal]} · ${t.qty}장. 식당 입구에서 아래 QR을 보여주세요.</p>
       </div>`;
   }
@@ -30,7 +30,7 @@
       listEl.innerHTML = `
         <div class="card p-10 text-center">
           <p class="text-4xl">🍽️</p>
-          <p class="mt-3 font-bold">${tab === 'active' ? '사용할 수 있는 이용권이 없어요' : '지난 이용권이 없어요'}</p>
+          <p class="mt-3 font-bold">${tab === 'active' ? '사용할 수 있는 식권이 없어요' : '지난 식권이 없어요'}</p>
           ${tab === 'active' ? '<a href="map.html" class="btn btn-primary mt-5">식당 찾으러 가기</a>' : ''}
         </div>`;
       return;

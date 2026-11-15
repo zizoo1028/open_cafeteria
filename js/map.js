@@ -149,7 +149,7 @@
         </div>
         <div class="mt-2 flex flex-wrap gap-1.5">
           ${OC.statusBadge(r)}
-          ${r.ticketOnSale ? '<span class="badge badge-brand">🎫 이용권</span>' : ''}
+          ${r.ticketOnSale ? '<span class="badge badge-brand">🎫 식권</span>' : ''}
           ${share > 0 ? `<span class="badge badge-green">🤝 ${share}장</span>` : ''}
         </div>
         <p class="mt-2 text-sm text-stone-600">🍱 ${esc(tm.label)}: <b>${esc(main)}</b>
@@ -190,7 +190,7 @@
         </div>
         <div class="flex flex-wrap gap-1.5">
           ${OC.statusBadge(r)}
-          ${r.ticketOnSale ? '<span class="badge badge-brand">🎫 이용권 판매 중</span>' : ''}
+          ${r.ticketOnSale ? '<span class="badge badge-brand">🎫 식권 판매 중</span>' : ''}
           ${share > 0 ? `<span class="badge badge-green">🤝 나눔 식권 ${share}장</span>` : ''}
         </div>
         <ul class="info-list text-[15px]">
@@ -220,7 +220,7 @@
           <a class="btn btn-outline" href="${base}#menu">📅 주간 식단</a>
           <a class="btn btn-outline" href="${base}#reviews">💬 후기 전체보기</a>
           <a class="btn btn-outline" href="${base}#info">ℹ️ 상세 정보</a>
-          ${r.ticketOnSale ? `<a class="btn btn-primary" href="checkout.html?id=${r.id}">🎫 이용권 사기</a>` : '<span class="btn btn-disabled">이용권 준비 중</span>'}
+          ${r.ticketOnSale ? `<a class="btn btn-primary" href="checkout.html?id=${r.id}">🎫 식권 사기</a>` : '<span class="btn btn-disabled">식권 준비 중</span>'}
         </div>
         <div class="grid grid-cols-[1fr_auto] gap-2">
           <a class="btn btn-dark" href="${OC.kakaoDirections(r)}" target="_blank" rel="noopener">🧭 길 찾기</a>

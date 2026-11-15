@@ -1,7 +1,7 @@
 /* 체험 모드 (전시·시연용)
  * 켜기: 주소 끝에 ?demo=1   끄기: ?demo=0
  * - 로그인·가입·개인정보 없이 모든 메뉴를 써 볼 수 있음
- * - 후기·이용권·나눔·파트너 입력은 이 기기(브라우저)에만 저장되고 서버(DB)에는 아무것도 쓰지 않음
+ * - 후기·식권·나눔·파트너 입력은 이 기기(브라우저)에만 저장되고 서버(DB)에는 아무것도 쓰지 않음
  * - 식단·파트너 실적은 체험용 예시 데이터를 자동으로 만들어 보여 줌
  * - 일정 시간 조작이 없으면 처음 화면으로 자동 복귀 (다음 관람객을 위해 입력 내용 초기화)
  * store.js 다음, layout.js 앞에서 불러와야 함.
@@ -163,7 +163,7 @@
     persist();
   };
 
-  /* ---------- 이용권·나눔 ---------- */
+  /* ---------- 식권·나눔 ---------- */
   const code = () => 'DEMO-' + Math.random().toString(36).slice(2, 6).toUpperCase() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
   const stat = (pid) => cache.stats.get(Number(pid)) || { place_id: Number(pid), rating_count: 0, rating_avg: 0, share_remaining: 0 };
   OC.fetchMyTickets = async () => S.tickets.map((t) => ({ ...t }));
@@ -176,7 +176,7 @@
   };
   OC.useTicket = async (id) => {
     const t = S.tickets.find((x) => x.id === id);
-    if (!t) throw new Error('이용권을 찾지 못했어요');
+    if (!t) throw new Error('식권을 찾지 못했어요');
     t.status = 'used';
     persist();
     return { ...t };
@@ -335,7 +335,7 @@
     const foot = document.getElementById('site-footer');
     if (foot) new MutationObserver(() => {
       const p = foot.querySelector('p.mt-1:last-child');
-      if (p && !p.dataset.demo) { p.dataset.demo = '1'; p.textContent = '※ 체험 모드입니다. 식단·후기·이용권 등은 예시이며 결제나 개인정보 수집이 없습니다.'; }
+      if (p && !p.dataset.demo) { p.dataset.demo = '1'; p.textContent = '※ 체험 모드입니다. 식단·후기·식권 등은 예시이며 결제나 개인정보 수집이 없습니다.'; }
     }).observe(foot, { childList: true, subtree: true });
   });
 

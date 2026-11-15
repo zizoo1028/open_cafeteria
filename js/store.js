@@ -1,7 +1,7 @@
 /* 공통 유틸 + Supabase 데이터 계층
  * - OC.ready: 페이지 시작 시 로그인 상태·식당·통계·이번 주 식단을 한 번에 불러옴
  * - 화면용 조회 함수(restaurants, menu, rating 등)는 캐시를 읽는 동기 함수
- * - 쓰기·개인 데이터(후기, 이용권, 나눔, 파트너)는 async 함수
+ * - 쓰기·개인 데이터(후기, 식권, 나눔, 파트너)는 async 함수
  */
 window.OC = (function () {
   const CFG = window.OC_CONFIG;
@@ -277,7 +277,7 @@ window.OC = (function () {
     await loadStats();
   }
 
-  /* ---------- 이용권 ---------- */
+  /* ---------- 식권 ---------- */
   const mapTicket = (t) => ({
     id: t.id,
     code: t.code,
