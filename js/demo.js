@@ -298,10 +298,9 @@
     html.demo-mode input, html.demo-mode textarea { -webkit-user-select: text; user-select: text; }
     .demo-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.25rem .6rem; border-radius:999px; background:#fff7ed; color:#c2410c; font-weight:800; font-size:.85rem; border:1px solid #fed7aa; }
     .demo-attract { position:fixed; inset:0; z-index:5000; background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; cursor:pointer; -webkit-user-select:none; user-select:none; }
+    .demo-attract .da-line { font-size:clamp(1.5rem,4.4vw,2.6rem); font-weight:500; line-height:1.7; letter-spacing:.02em; word-break:keep-all; }
+    .demo-attract .da-rule { width:3rem; height:1px; background:rgba(255,255,255,.55); margin:2.6rem 0; }
     .demo-attract .da-title { font-size:clamp(2.4rem,8vw,4.6rem); font-weight:800; letter-spacing:.04em; }
-    .demo-attract .da-rule { width:3rem; height:1px; background:rgba(255,255,255,.55); margin:2.2rem 0; }
-    .demo-attract .da-line { min-height:4.2rem; font-size:clamp(1.25rem,3.6vw,2rem); font-weight:400; line-height:1.7; letter-spacing:.02em; max-width:22em; word-break:keep-all; opacity:0; transition:opacity .9s ease; }
-    .demo-attract .da-line.on { opacity:1; }
     .demo-attract .da-touch { position:absolute; bottom:max(3rem,8vh); font-size:clamp(1rem,2.6vw,1.35rem); font-weight:400; letter-spacing:.15em; color:#fff; animation:daBlink 2.6s ease-in-out infinite; }
     @keyframes daBlink { 0%,100% { opacity:.25; } 50% { opacity:.8; } }
     .demo-toast { position:fixed; left:50%; bottom:1.5rem; transform:translateX(-50%); z-index:3000; background:#3b2a20; color:#fff; padding:.9rem 1.4rem; border-radius:1rem; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.3); }`;
@@ -365,44 +364,17 @@
   function showAttract() {
     if (attractEl) return;
     clearWarn();
-    // 식당 수는 문구를 바꿀 때마다 그때의 DB 값으로 계산 (대기 화면이 먼저 뜨고 데이터가 나중에 올 수 있음)
-    const lines = () => {
-      const count = (OC.restaurants && OC.restaurants().length) || 0;
-      return [
-        '회사 안에만 있던 구내식당이, 이제 동네의 식탁이 됩니다',
-        '문 닫힌 식당이 아니라, 문 열린 식당입니다',
-        '비싼 점심이 아니어도, 영양은 빠지지 않습니다',
-        count ? `오늘, 우리 동네 ${count}곳의 구내식당이 문을 열고 있습니다` : '오늘, 우리 동네의 구내식당이 문을 열고 있습니다',
-        '점심값이 부담스러운 날, 가장 가까운 구내식당으로 오세요',
-        '어르신의 한 끼도, 수험생의 한 끼도 똑같이 든든하게',
-        '당신이 나눈 한 끼는, 누군가의 하루를 버티는 힘이 됩니다',
-      ];
-    };
     attractEl = document.createElement('div');
     attractEl.className = 'demo-attract';
     attractEl.setAttribute('role', 'button');
     attractEl.setAttribute('aria-label', '화면을 터치하면 시작합니다');
     attractEl.innerHTML = `
-      <div class="da-title">우리동네 열린식당</div>
+      <div class="da-line">회사 안에만 있던 구내식당이,<br>이제 모두의 열린식당이 됩니다</div>
       <div class="da-rule"></div>
-      <div class="da-line" id="daLine"></div>
-      <div class="da-touch">화면을 터치해 주세요</div>`;
+      <div class="da-title">우리동네 열린식당</div>
+      <div class="da-touch">지금 화면을 터치해주세요</div>`;
     document.body.appendChild(attractEl);
-    const line = attractEl.querySelector('#daLine');
-    let i = 0; // 늘 첫 문구로 시작
-    const next = () => {
-      line.classList.remove('on');
-      setTimeout(() => {
-        const all = lines();
-        line.textContent = all[i % all.length];
-        i += 1;
-        line.classList.add('on');
-      }, 900);
-    };
-    next();
-    const rot = setInterval(next, 6000);
     attractEl.addEventListener('click', () => {
-      clearInterval(rot);
       attractEl.remove();
       attractEl = null;
       if (!/(^|\/)(index\.html)?$/.test(location.pathname)) location.href = 'index.html';
