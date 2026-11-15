@@ -278,7 +278,7 @@
     });
   });
 
-  /* ---------- 화면 꾸미기: 헤더 표시, 바깥 링크는 QR로 ---------- */
+  /* ---------- 화면 꾸미기: 헤더에 체험 모드 표시 ---------- */
   const style = document.createElement('style');
   style.textContent = `
     html.demo-mode { -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
@@ -311,47 +311,8 @@
     }).observe(foot, { childList: true, subtree: true });
   });
 
-  // 바깥 사이트(네이버·카카오·인스타그램 등)로 나가는 링크는 태블릿을 떠나지 않도록 QR로 보여 줌
-  function showQr(url) {
-    const ov = document.createElement('div');
-    ov.className = 'overlay';
-    ov.innerHTML = `<div class="bg-white rounded-3xl p-7 w-[min(92vw,420px)] text-center shadow-xl" role="dialog" aria-modal="true" aria-label="휴대폰으로 보기">
-      <p class="text-2xl font-extrabold">📱 휴대폰으로 보세요</p>
-      <p class="mt-1 text-stone-600">카메라로 QR을 비추면 식단표가 열려요</p>
-      <div id="demoQr" class="mx-auto mt-4 inline-block bg-white p-3 rounded-2xl border border-stone-100"></div>
-      <p class="mt-3 text-xs text-stone-400 break-all">${OC.esc(new URL(url).host)}</p>
-      <button data-close class="btn btn-primary w-full mt-5">닫기</button></div>`;
-    ov.addEventListener('click', (e) => {
-      if (e.target === ov || e.target.closest('[data-close]')) ov.remove();
-    });
-    document.body.appendChild(ov);
-    const draw = () => new QRCode(ov.querySelector('#demoQr'), { text: url, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
-    if (window.QRCode) draw();
-    else {
-      const s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-      s.onload = draw;
-      document.head.appendChild(s);
-    }
-  }
-  document.addEventListener(
-    'click',
-    (e) => {
-      const a = e.target.closest && e.target.closest('a[href]');
-      if (!a) return;
-      let u;
-      try {
-        u = new URL(a.href, location.href);
-      } catch (err) {
-        return;
-      }
-      if (!/^https?:$/.test(u.protocol) || u.origin === location.origin) return;
-      e.preventDefault();
-      e.stopPropagation();
-      showQr(u.href);
-    },
-    true
-  );
+  // 전시장에 인터넷이 연결돼 있으므로 식단표·길 찾기 같은 바깥 링크(네이버·카카오·인스타그램 등)는 그대로 새 탭에서 열림.
+  // (인터넷이 없는 환경에서 QR로 보여 주려면 이 자리에 링크 가로채기를 다시 넣으면 됨)
 
   /* ---------- 일정 시간 조작이 없으면 처음 화면으로 ---------- */
   let idleTimer = null;
