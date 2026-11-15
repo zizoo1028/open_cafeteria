@@ -17,7 +17,7 @@
     <section class="bg-gradient-to-b from-brand-50 to-cream">
       <div class="max-w-6xl mx-auto px-4 pt-14 pb-16 md:pt-20 md:pb-24 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
         <div>
-          <span class="badge badge-brand">서울·부산 시범 운영 (프로토타입)</span>
+          <span id="regionBadge" class="badge badge-brand">전국 시범 운영 (프로토타입)</span>
           <h1 class="mt-4 text-4xl md:text-5xl font-extrabold leading-tight">
             우리 동네 구내식당에서<br><span class="text-brand-600">건강한 한 끼</span>를
           </h1>
@@ -34,6 +34,8 @@
             <div class="card p-4"><dt class="text-sm text-stone-500">평균 한 끼</dt><dd id="statPrice" class="text-2xl font-extrabold mt-1">-</dd></div>
             <div class="card p-4"><dt class="text-sm text-stone-500">나눔 식권</dt><dd id="statShare" class="text-2xl font-extrabold mt-1">-</dd></div>
           </dl>
+          <!-- 지역별 식당 수 (DB 기준으로 자동 계산) -->
+          <p id="statRegions" class="mt-3 text-sm text-stone-500"></p>
         </div>
         <!-- 대표 식당 카드 (IR 시연 대상: 부영그룹 식당, DB 데이터로 채움) -->
         <div class="relative" aria-label="대표 식당">
@@ -111,8 +113,8 @@
       <h2 class="mt-2 text-3xl font-extrabold">정보에서 끝나지 않는 구내식당 플랫폼</h2>
       <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <a href="map.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🗺️</div><h3 class="mt-3 font-extrabold text-lg">지도·식단표·후기</h3><p class="mt-2 text-stone-600">개방 식당 위치, 주간 식단, 이용 후기를 한곳에서 확인해요.</p></a>
-        <a href="restaurant.html?id=2#menu" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🥗</div><h3 class="mt-3 font-extrabold text-lg">영양 정보</h3><p class="mt-2 text-stone-600">메뉴마다 열량과 탄수화물·단백질·지방 비율, 균형식단 여부를 보여줘요.</p></a>
-        <a href="checkout.html?id=2" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🎫</div><h3 class="mt-3 font-extrabold text-lg">이용권 사전판매</h3><p class="mt-2 text-stone-600">미리 사면 줄 서지 않고, 식당은 몇 명이 올지 미리 알 수 있어요.</p></a>
+        <a id="linkNutrition" href="map.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🥗</div><h3 class="mt-3 font-extrabold text-lg">영양 정보</h3><p class="mt-2 text-stone-600">메뉴마다 열량과 탄수화물·단백질·지방 비율, 균형식단 여부를 보여줘요.</p></a>
+        <a id="linkTicket" href="map.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🎫</div><h3 class="mt-3 font-extrabold text-lg">이용권 사전판매</h3><p class="mt-2 text-stone-600">미리 사면 줄 서지 않고, 식당은 몇 명이 올지 미리 알 수 있어요.</p></a>
         <a href="share.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🤝</div><h3 class="mt-3 font-extrabold text-lg">나눔 식권</h3><p class="mt-2 text-stone-600">이웃이 기부한 식권으로 어르신·청소년이 따뜻한 한 끼를 먹어요.</p></a>
         <a href="partner.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">📊</div><h3 class="mt-3 font-extrabold text-lg">위탁업체 식수 예측</h3><p class="mt-2 text-stone-600">사전판매와 과거 실적으로 내일 식수를 예측해 잔반과 강제식수를 줄여요.</p></a>
         <a href="b2g.html" class="card p-6 hover:border-brand-300 transition"><div class="text-3xl">🏛️</div><h3 class="mt-3 font-extrabold text-lg">공공 협력 (B2G)</h3><p class="mt-2 text-stone-600">지자체·공공기관 식당을 개방하고 끼니 복지 사업과 연계해요.</p></a>
@@ -177,11 +179,32 @@
       document.getElementById('statPrice').textContent = priced.length
         ? (Math.round(priced.reduce((s, r) => s + r.price, 0) / priced.length / 100) / 10).toFixed(1) + '천원'
         : '-';
+      document.getElementById('statPrice').title = `가격 정보가 있는 ${priced.length}곳 기준`;
       document.getElementById('statShare').textContent = list.reduce((s, r) => s + OC.shareRemaining(r.id), 0) + '장';
+
+      // 지역별 식당 수: 주소 맨 앞 지역명(서울·경기·부산 …)으로 묶음. 식당이 추가·승인·숨김되면 자동으로 바뀜
+      const REGION = { 서울특별시: '서울', 부산광역시: '부산', 경기도: '경기', 경상남도: '경남', 인천광역시: '인천', 대구광역시: '대구', 대전광역시: '대전', 광주광역시: '광주', 울산광역시: '울산', 세종특별자치시: '세종' };
+      const regions = new Map();
+      list.forEach((r) => {
+        const head = (r.address || '').split(' ')[0];
+        const name = REGION[head] || head;
+        if (name) regions.set(name, (regions.get(name) || 0) + 1);
+      });
+      const byCount = [...regions.entries()].sort((a, b) => b[1] - a[1]);
+      if (byCount.length) {
+        document.getElementById('regionBadge').textContent = `${byCount.map(([n]) => n).join('·')} 시범 운영 (프로토타입)`;
+        document.getElementById('statRegions').textContent = byCount.map(([n, c]) => `${n} ${c}곳`).join(' · ');
+      }
 
       // 대표 식당 카드: IR 시연 대상(부영그룹 식당). 이름이 바뀌어도 찾을 수 있게 id 우선, 없으면 이름으로
       const FEATURED_ID = 407;
       const r = OC.restaurant(FEATURED_ID) || list.find((x) => x.name.includes('부영그룹'));
+      // 주요 기능 카드 링크: 항상 지금 있는 식당으로 연결 (예전에는 식당 번호가 고정돼 있어 식당이 바뀌면 깨졌음)
+      const sample = list.find((x) => x.ticketOnSale) || list[0];
+      if (sample) {
+        document.getElementById('linkNutrition').href = `restaurant.html?id=${(OC.restaurant(FEATURED_ID) || sample).id}#menu`;
+        document.getElementById('linkTicket').href = sample.ticketOnSale ? `checkout.html?id=${sample.id}` : `restaurant.html?id=${sample.id}`;
+      }
       if (!r) return;
       const $ = (id) => document.getElementById(id);
       const st = OC.status(r);
