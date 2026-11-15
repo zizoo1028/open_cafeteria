@@ -67,7 +67,8 @@
       localStorage.setItem(STATE_KEY, JSON.stringify(S));
     } catch (e) {}
   };
-  const fresh = () => !(S.tickets.length || S.reviews.length || S.donations.length || S.counts.length);
+  // 관람객이 직접 입력한 것이 없으면 처음 상태 (미리 넣어 둔 예시 식권은 제외)
+  const fresh = () => !(S.tickets.some((t) => !t.seed) || S.reviews.length || S.donations.length || S.counts.length);
 
   /* ---------- 예시 식단 만들기 (같은 식당·날짜면 늘 같은 메뉴) ---------- */
   function rng(seed) {
@@ -133,10 +134,22 @@
   const SEED_REVIEWS = [
     { place: 407, nickname: '점심러', rating: 5, text: '반찬이 다양하고 깔끔해요. 외부인도 눈치 안 보고 먹을 수 있어서 좋았어요.', ago: 1 },
     { place: 407, nickname: '근처직장인', rating: 4, text: '가격 대비 구성이 좋아요. 12시 넘어가면 줄이 길어요.', ago: 3 },
+    { place: 407, nickname: '시청역출근러', rating: 5, text: '시청역에서 가까워서 좋아요. 오늘은 국이 특히 맛있었어요.', ago: 8 },
     { place: 332, nickname: '도서관이웃', rating: 5, text: '책 보다가 간단히 먹기 좋아요. 국이 따뜻해서 만족.', ago: 2 },
+    { place: 332, nickname: '공부하는중', rating: 4, text: '도서관 다녀오는 길에 먹었는데 가격이 착해요. 점심시간엔 사람이 꽤 많아요.', ago: 7 },
     { place: 292, nickname: '국회구경', rating: 4, text: '메뉴가 매일 바뀌어서 지루하지 않아요.', ago: 5 },
     { place: 300, nickname: '판교러', rating: 4, text: '점심 가성비 괜찮아요. 식단표를 미리 볼 수 있어서 편해요.', ago: 4 },
+    { place: 300, nickname: '야근탈출', rating: 5, text: '배불리 먹고 6천 원대, 이 동네에서 보기 힘든 가격이에요.', ago: 9 },
     { place: 338, nickname: '성수동주민', rating: 5, text: '샐러드바까지 있어서 든든했어요.', ago: 6 },
+    { place: 338, nickname: '맛집탐방러', rating: 5, text: '메뉴가 매일 달라서 자주 오게 돼요. 후식도 있어요.', ago: 10 },
+    { place: 336, nickname: '성수점심', rating: 4, text: '이름처럼 반찬이 정갈해요. 국물이 깔끔했어요.', ago: 11 },
+    { place: 320, nickname: '양재직장인', rating: 4, text: '양재역에서 걸어서 5분이에요. 점심시간에는 대기가 조금 있어요.', ago: 5 },
+    { place: 294, nickname: '어르신아드님', rating: 4, text: '어르신들이 많이 오세요. 간이 슴슴해서 부모님이 좋아하셨어요.', ago: 12 },
+    { place: 384, nickname: '용산주민', rating: 4, text: '조용한 분위기에서 천천히 먹을 수 있어요.', ago: 13 },
+    { place: 341, nickname: '런치탐험가', rating: 3, text: '메인 반찬이 푸짐해요. 다만 12시 전후에는 대기가 길어요.', ago: 14 },
+    { place: 348, nickname: '동네주민', rating: 5, text: '구청 식당인데 외부인도 이용할 수 있어요. 5천 원대라 부담이 없어요.', ago: 3 },
+    { place: 420, nickname: '수험생엄마', rating: 5, text: '가격이 저렴해서 놀랐어요. 아이랑 같이 먹었어요.', ago: 6 },
+    { place: 328, nickname: '강남출근길', rating: 4, text: '식단표를 미리 볼 수 있어서 좋아요.', ago: 8 },
   ];
   const mkReview = (v, i) => ({ id: `seed-${i}`, restaurantId: v.place, nickname: v.nickname, rating: v.rating, text: v.text, date: OC.daysFromToday(-v.ago), mine: false });
   const origFetchReviews = OC.fetchReviews;
@@ -166,6 +179,15 @@
   /* ---------- 식권·나눔 ---------- */
   const code = () => 'DEMO-' + Math.random().toString(36).slice(2, 6).toUpperCase() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
   const stat = (pid) => cache.stats.get(Number(pid)) || { place_id: Number(pid), rating_count: 0, rating_avg: 0, share_remaining: 0 };
+  // 관람객이 처음 들어오면 보여 줄 예시 식권 4장 (사용 가능 2장, 사용 완료 1장, 기간 지남 1장)
+  function seedTickets() {
+    const price = (id, qty) => ((OC.restaurant(id) || {}).price || 6000) * qty;
+    const mk = (n, id, ago, meal, qty, source, status) => ({
+      id: `seed-t${n}`, code: `DEMO-${n}K${n + 3}M-${n * 7}QXA`.slice(0, 15), restaurantId: id, date: OC.daysFromToday(ago), meal, qty,
+      price: source === 'share' ? 0 : price(id, qty), source, status, seed: true,
+    });
+    return [mk(1, 407, 1, 'lunch', 2, 'buy', 'valid'), mk(2, 332, 0, 'lunch', 1, 'share', 'valid'), mk(3, 338, -1, 'lunch', 1, 'buy', 'used'), mk(4, 300, -4, 'lunch', 1, 'buy', 'valid')];
+  }
   OC.fetchMyTickets = async () => S.tickets.map((t) => ({ ...t }));
   OC.buyTicket = async ({ restaurantId, date, meal, qty }) => {
     const r = OC.restaurant(restaurantId);
@@ -185,7 +207,14 @@
     { place: 407, name: '따뜻한이웃', qty: 3, msg: '든든하게 드세요', ago: 0 },
     { place: 332, name: '익명', qty: 2, msg: '', ago: 1 },
     { place: 292, name: '동네주민', qty: 5, msg: '힘내세요!', ago: 2 },
+    { place: 338, name: '퇴근길이웃', qty: 2, msg: '따뜻한 밥 한 끼 드시고 힘내세요', ago: 3 },
+    { place: 300, name: '판교러', qty: 4, msg: '야근하는 분들께', ago: 4 },
+    { place: 420, name: '익명', qty: 3, msg: '어르신들 점심 드세요', ago: 5 },
+    { place: 348, name: '한마음 모임', qty: 6, msg: '이웃과 나누는 한 끼', ago: 6 },
+    { place: 407, name: '수험생 부모', qty: 2, msg: '시험 보는 친구들 응원합니다', ago: 8 },
   ];
+  // 나눔 식권이 남아 있는 식당 (받기 화면에서 고를 수 있도록)
+  const SEED_SHARE_REMAINING = { 407: 10, 332: 6, 292: 5, 338: 4, 300: 4, 420: 3, 348: 6, 320: 3, 341: 2, 336: 2 };
   OC.donate = async ({ restaurantId, qty, name, msg }) => {
     S.donations.push({ place: Number(restaurantId), name: name || '익명', qty, msg: msg || '', date: OC.today() });
     stat(restaurantId).share_remaining += qty;
@@ -214,10 +243,10 @@
   };
 
   /* ---------- 파트너(식당 사장님) 화면: 예시 식당 하나로 체험 ---------- */
-  const PARTNER_ID = 407; // 부영그룹 식당
+  const PARTNER_IDS = [407, 338, 320, 341]; // 부영그룹 식당 · 밥플러스 성수역점 · 캠코양재타워 식당 · 런치투데이
   OC.myManagedPlaces = async () => {
-    const r = OC.restaurant(PARTNER_ID) || OC.restaurants()[0];
-    return r ? [r] : [];
+    const list = PARTNER_IDS.map((id) => OC.restaurant(id)).filter(Boolean);
+    return list.length ? list : OC.restaurants().slice(0, 1);
   };
   const isWeekday = (d) => d.getDay() >= 1 && d.getDay() <= 5;
   OC.dailyCounts = async (placeId, from, to) => {
@@ -289,6 +318,18 @@
       }
     });
     fillMenus(null, OC.today(), OC.daysFromToday(7));
+    // 나눔 식권 잔여 (서버 값보다 적으면 예시 값으로)
+    Object.entries(SEED_SHARE_REMAINING).forEach(([id, n]) => {
+      const s = stat(id);
+      if (s.share_remaining < n) s.share_remaining = n;
+      cache.stats.set(Number(id), s);
+    });
+    // 내 식권 예시 (처음 한 번만 넣음. 처음 화면으로 초기화되면 다시 들어옴)
+    if (!S.seeded) {
+      S.tickets = [...seedTickets(), ...S.tickets];
+      S.seeded = true;
+      persist();
+    }
     // 예시 후기·내가 쓴 후기를 별점 통계에 반영 (통계는 서버에서 불러온 뒤 만들어지므로 여기서)
     SEED_REVIEWS.forEach((v) => bumpRating(v.place, v.rating));
     S.reviews.forEach((v) => bumpRating(v.place, v.rating));
