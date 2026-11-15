@@ -266,6 +266,16 @@
   OC.ready = origReady.then(() => {
     cache.user = { id: 'demo-user' };
     cache.profile = { nickname: '체험 이웃', role: 'user' };
+    // 가격·운영시간이 비어 있는 식당은 체험용 예시 값으로 채움 (같은 식당이면 늘 같은 값). 서버 데이터는 바뀌지 않음
+    OC.restaurants().forEach((r) => {
+      const g = rng(hash(`fill|${r.id}`));
+      if (!r.price) r.price = 5000 + Math.floor(g() * 7) * 500; // 5,000~8,000원
+      if (!r.hours.lunch && !r.hours.dinner) {
+        const start = g() < 0.5 ? '11:00' : '11:30';
+        const end = g() < 0.5 ? '13:30' : '14:00';
+        r.hours.lunch = [start, end];
+      }
+    });
     fillMenus(null, OC.today(), OC.daysFromToday(7));
     // 예시 후기·내가 쓴 후기를 별점 통계에 반영 (통계는 서버에서 불러온 뒤 만들어지므로 여기서)
     SEED_REVIEWS.forEach((v) => bumpRating(v.place, v.rating));
